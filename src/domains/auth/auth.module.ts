@@ -25,7 +25,7 @@ import { GameStats } from '../statistics/entities/game-statistics.entity';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: '60m' },
+        signOptions: { expiresIn: '365d' },
       }),
       inject: [ConfigService],
     }),

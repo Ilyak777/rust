@@ -39,15 +39,19 @@ export class IntegrationService {
     }
     const user = await this.userRepository.findOne({ where: { id: userId } });
     await this.commandsService.grantSkinbox(userId, user.steamId);
-    return await this.checkOneWinIntegration(payload.oci, payload.oce);
+    return await this.checkOneWinIntegration(userId, payload.oci, payload.oce);
   }
 
-  async checkOneWinIntegration(clienId: string, clientEmail: string) {
+  async checkOneWinIntegration(
+    userId: number,
+    clienId: string,
+    clientEmail: string,
+  ) {
     const integration = await this.repo.getOneWinIntegration(clienId);
 
     const result =
       integration === null
-        ? await this.repo.createOneWinIntegration(clienId, clientEmail)
+        ? await this.repo.createOneWinIntegration(userId, clienId, clientEmail)
         : await this.repo.updateOneWinIntegration(integration.id, clientEmail);
 
     return result;

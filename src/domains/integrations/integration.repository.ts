@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OneWinIntegration } from './entities/integration-1win.entity';
+import { Integration } from './entities/integration.entity';
 
 @Injectable()
 export class IntegrationRepository {
   constructor(
     @InjectRepository(OneWinIntegration)
     private oneWinRepository: Repository<OneWinIntegration>,
+    @InjectRepository(Integration)
+    private userIntegration: Repository<Integration>,
   ) {}
 
   async getOneWinIntegration(clientId: string): Promise<OneWinIntegration> {
@@ -15,10 +18,22 @@ export class IntegrationRepository {
   }
 
   async createOneWinIntegration(
+    userId: number,
     clientId: string,
     clientEmail: string,
   ): Promise<OneWinIntegration> {
-    const integration = this.oneWinRepository.create({ clientId, clientEmail });
+    const userIntegrations = await this.userIntegration.findOne({
+      where: { user: { id: userId } },
+    });
+    if (userIntegrations.onewin) {
+      throw new BadRequestException('onewin-already-exists');
+    }
+    const integration = this.oneWinRepository.create({
+      clientId,
+      clientEmail,
+      Integrations: userIntegrations,
+    });
+
     return this.oneWinRepository.save(integration);
   }
 

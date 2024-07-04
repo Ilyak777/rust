@@ -13,6 +13,8 @@ import { SeederModule } from './domains/seed/seed.module';
 import { ShopModule } from './domains/shop/shop.module';
 import { UserModule } from './domains/user/user.module';
 import { CommandsModule } from './domains/commands/commands.module';
+import { RconModule } from './domains/rcon/rcon.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { CommandsModule } from './domains/commands/commands.module';
     CommandsModule,
     SeederModule,
     ShopModule,
+    RconModule,
   ],
   controllers: [],
   providers: [],

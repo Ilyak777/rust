@@ -1,5 +1,5 @@
-import { Server } from 'src/domains/servers/entity/server.entity';
-import { User } from 'src/domains/user/entities/user.entity';
+import { Server } from '../../servers/entity/server.entity';
+import { User } from '../../user/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

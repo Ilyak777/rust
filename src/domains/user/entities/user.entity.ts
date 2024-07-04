@@ -14,7 +14,7 @@ import { GameStats } from '../../statistics/entities/game-statistics.entity';
 import { SteamStats } from '../../statistics/entities/steam-statistics.entity';
 import { ProfileData } from '../../profile/entities/profile.entity';
 import { Integration } from '../../integrations/entities/integration.entity';
-import { Commands } from 'src/domains/commands/entity/commands.entity';
+import { Commands } from '../../commands/entity/commands.entity';
 
 @Entity()
 export class User {

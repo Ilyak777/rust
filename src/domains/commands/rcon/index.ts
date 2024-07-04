@@ -1,20 +1,28 @@
-// declare function require(moduleName: string): any;
+const express = require('express');
 const { Client } = require('rustrcon');
 
-const rcon = new Client({
-  ip: '136.243.75.253',
-  port: 28016,
-  password: 'mO8yE3B5',
+const app = express();
+const port = 3000;
+
+const rcon_host = '62.122.215.98';
+const rcon_port = 38015;
+const rcon_password = 'kGkMdsdWersajwsUc1H';
+
+export const rcon = new Client({
+  ip: rcon_host,
+  port: rcon_port,
+  password: rcon_password,
 });
 
 rcon.login();
+
 rcon.on('connected', () => {
   console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
 
   // ПОЛУЧЕНИЕ КАРТЫ СЕРВЕРА
-  rcon.send('serverinfo', 'M3RCURRRY', 3);
+  rcon.send('serverinfo', 'M3RCURRRY', 333);
   // ПОЛУЧЕНИЕ ИНФЫ О СЕРВЕРЕ
-  rcon.send('server.levelurl', 'M3RCURRRY', 3);
+  rcon.send('server.levelurl', 'M3RCURRRY', 222);
 });
 
 rcon.on('error', (err) => {
@@ -26,5 +34,10 @@ rcon.on('disconnect', () => {
 });
 
 rcon.on('message', (message) => {
-  console.log(message);
+  if (message.Identifier === 333) {
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
 });

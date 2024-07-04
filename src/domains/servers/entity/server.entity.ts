@@ -8,7 +8,7 @@ import {
 import { ServerWipe } from './server-wipe.entity';
 import { ShopItem } from '../../shop/entities/shop-item.entity';
 import { Subscription } from '../../subscriptions/entities/subscription.entity';
-import { Commands } from 'src/domains/commands/entity/commands.entity';
+import { Commands } from '../../commands/entity/commands.entity';
 
 @Entity()
 export class Server {

@@ -7,9 +7,7 @@ export class Integration {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, (user) => user.integrations, {
-    cascade: true,
-  })
+  @OneToOne(() => User, (user) => user.integrations)
   @JoinColumn()
   user: User;
 

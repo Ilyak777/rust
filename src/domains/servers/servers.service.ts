@@ -15,7 +15,7 @@ declare function require(moduleName: string): any;
 const { GameDig } = require('gamedig');
 
 @Injectable()
-export class ServersService implements OnModuleInit, OnModuleDestroy {
+export class ServersService {
   private rcon: Client;
 
   constructor(
@@ -26,69 +26,68 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     @Inject(Cache) private cacheManager: Cache,
   ) {}
 
-  onModuleInit() {
-    this.startChecking();
-  }
+  // onModuleInit() {
+  //   this.startChecking();
+  // }
 
-  onModuleDestroy() {
-    if (this.rcon) {
-      this.rcon.disconnect();
-    }
-  }
+  // onModuleDestroy() {
+  //   if (this.rcon) {
+  //     this.rcon.disconnect();
+  //   }
+  // }
 
-  startChecking = () => {
-    const rcon_host = '62.122.215.98';
-    const rcon_port = 38015;
-    const rcon_password = 'kGkMdsdWersajwsUc1H';
-    console.log(123);
+  // startChecking = () => {
+  //   const rcon_host = '62.122.215.98';
+  //   const rcon_port = 38015;
+  //   const rcon_password = 'kGkMdsdWersajwsUc1H';
+  //   console.log(123);
 
-    const rcon = new Client({
-      ip: rcon_host,
-      port: rcon_port,
-      password: rcon_password,
-    });
-    try {
-      rcon.login();
-    } catch (error) {
-      console.log(error);
-    }
+  //   const rcon = new Client({
+  //     ip: rcon_host,
+  //     port: rcon_port,
+  //     password: rcon_password,
+  //   });
+  //   try {
+  //     rcon.login();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
 
-    rcon.on('connected', () => {
-      console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
+  //   rcon.on('connected', () => {
+  //     console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
 
-      rcon.send('serverinfo', 'M3RCURRRY', 333);
-      rcon.send('server.levelurl', 'M3RCURRRY', 333);
-      rcon.send('');
-    });
+  //     rcon.send('serverinfo', 'M3RCURRRY', 333);
+  //     rcon.send('server.levelurl', 'M3RCURRRY', 333);
+  //     rcon.send('');
+  //   });
 
-    rcon.on('error', (err) => {
-      console.error(err);
-    });
+  //   rcon.on('error', (err) => {
+  //     console.error(err);
+  //   });
 
-    rcon.on('disconnect', () => {
-      console.log('Disconnected from RCON websocket');
-    });
+  //   rcon.on('disconnect', () => {
+  //     console.log('Disconnected from RCON websocket');
+  //   });
 
-    rcon.on('message', (message) => {
-      console.log(message);
+  //   rcon.on('message', (message) => {
+  //     console.log(message);
 
-      if (message.Identifier === 333) {
-        try {
-          console.log(rcon_host + ':' + rcon_port);
+  //     if (message.Identifier === 333) {
+  //       try {
+  //         console.log(rcon_host + ':' + rcon_port);
 
-          this.setMap(rcon_host + ':' + rcon_port, message.content);
-          console.log('Server info:', message);
-        } catch (error) {
-          console.log(error);
-        }
-      } else if (message.Identifier === 222) {
-        console.log('Level URL:', message);
-      }
-    });
-  };
+  //         this.setMap(rcon_host + ':' + rcon_port, message.content);
+  //         console.log('Server info:', message);
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     } else if (message.Identifier === 222) {
+  //       console.log('Level URL:', message);
+  //     }
+  //   });
+  // };
 
   async getServers(): Promise<Server[]> {
-    await this.startChecking();
     return this.serversRepository.find();
   }
 
@@ -194,26 +193,26 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     return this.wipesRepository.save(wipe);
   }
 
-  async setMap(serverAddress: string, map: string): Promise<Server> {
-    console.log('----------->', serverAddress);
-    const x = await this.serversRepository.find();
-    console.log('===================>', x);
+  // async setMap(serverAddress: string, map: string): Promise<Server> {
+  //   console.log('----------->', serverAddress);
+  //   const x = await this.serversRepository.find();
+  //   console.log('===================>', x);
 
-    const server = await this.serversRepository.findOne({
-      where: { address: serverAddress.toString().trimStart().trimEnd() },
-    });
+  //   const server = await this.serversRepository.findOne({
+  //     where: { address: serverAddress.toString().trimStart().trimEnd() },
+  //   });
 
-    if (!server) {
-      throw new Error('Server not found');
-    }
+  //   if (!server) {
+  //     throw new Error('Server not found');
+  //   }
 
-    if (server.rustMapsId) {
-      return server;
-    }
+  //   if (server.rustMapsId) {
+  //     return server;
+  //   }
 
-    server.rustMapsId = map;
+  //   server.rustMapsId = map;
 
-    const serverToReturn = await this.serversRepository.save(server);
-    return serverToReturn;
-  }
+  //   const serverToReturn = await this.serversRepository.save(server);
+  //   return serverToReturn;
+  // }
 }

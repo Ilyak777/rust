@@ -19,37 +19,36 @@ export class IntegrationService {
     private commandsService: CommandsService,
   ) {}
 
-  async onewinLogin(userId: string) {
+  async onewinLogin(userId: number) {
     const oauthKey = uuidv4();
     await this.cacheManager.set(`onewin-${oauthKey}`, userId, 300);
 
-    let domain = '1wcght.life/casino/list?open=register&p=w3wf';
+    const domain = '1wcght.life/casino/list?open=register&p=w3wf';
 
     return {
-      url: `https://${domain}?oauth_key=${oauthKey}&oauth_client=${process.env.ONEWIN_OAUTH_KEY}`,
+      url: `https://${domain}&oauth_key=${oauthKey}&oauth_client=${process.env.ONEWIN_OAUTH_KEY}`,
     };
   }
 
   async onewinWebhook(payload: OnewinDto) {
-    const userId = (await this.cacheManager.get<string>(
-      `onewin-${payload.ok}`,
-    )) as string;
+    const userId = await this.cacheManager.get<number>(`onewin-${payload.ok}`);
     this.cacheManager.del(`onewin-${payload.ok}`);
     const oneExists = await this.repo.getOneWinIntegration(payload.oci);
     if (oneExists) {
       throw new BadRequestException('onewin-already-exists');
     }
-    await this.commandsService.checkAndGrantSkinbox(userId, 1, 2);
-    return await this.repo.updateUserOneWinIntegration(userId);
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    await this.commandsService.grantSkinbox(userId, user.steamId);
+    return await this.checkOneWinIntegration(payload.oci, payload.oce);
   }
 
-  async checkOneWinIntegration(value: string) {
-    const integration = await this.repo.getOneWinIntegration(value);
+  async checkOneWinIntegration(clienId: string, clientEmail: string) {
+    const integration = await this.repo.getOneWinIntegration(clienId);
 
     const result =
       integration === null
-        ? await this.repo.createOneWinIntegration(value, '')
-        : await this.repo.updateOneWinIntegration(integration.id, value);
+        ? await this.repo.createOneWinIntegration(clienId, clientEmail)
+        : await this.repo.updateOneWinIntegration(integration.id, clientEmail);
 
     return result;
   }

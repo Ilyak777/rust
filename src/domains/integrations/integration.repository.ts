@@ -22,8 +22,11 @@ export class IntegrationRepository {
     return this.oneWinRepository.save(integration);
   }
 
-  async updateOneWinIntegration(id: number): Promise<OneWinIntegration> {
-    await this.oneWinRepository.update(id, { clientEmail });
+  async updateOneWinIntegration(
+    id: number,
+    clientId: string,
+  ): Promise<OneWinIntegration> {
+    await this.oneWinRepository.update(id, { clientId });
     return this.oneWinRepository.findOne({ where: { id } });
   }
 }

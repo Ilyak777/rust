@@ -27,28 +27,15 @@ export class CommandsService {
     });
   }
 
-  async checkAndGrantSkinbox(
-    userId: number,
-    steamId: string,
-    serverId: number,
-  ): Promise<void> {
-    const hasOneWinIntegration = await this.integrationService.checkIntegration(
-      userId,
-    );
-    if (hasOneWinIntegration) {
-      const command = `o.grant user ${steamId} skinbox.nickname`;
-      const server = await this.integrationService.findOne(serverId);
-      const user = await this.integrationService.findOne(userId);
-
-      const newCommand = this.commandsRepository.create({
-        command,
-        user,
-        server,
-      });
-      await this.commandsRepository.save(newCommand);
-
-      this.sendCommandToServer(server, command);
-    }
+  async grantSkinbox(userId: number, steamId: string): Promise<void> {
+    // const command = `o.grant user ${steamId} skinbox.nickname`;
+    // const newCommand = this.commandsRepository.create({
+    //   command,
+    //   user,
+    //   server,
+    // });
+    // await this.commandsRepository.save(newCommand);
+    // this.sendCommandToServer(server, command);
   }
 
   private sendCommandToServer(server: Server, command: string): void {

@@ -67,16 +67,16 @@ export class ServersController {
     return this.serversService.addWipe(serverId, wipeData);
   }
 
-  @ApiOperation({ summary: 'Set a map for server' })
-  @ApiResponse({
-    status: 201,
-    description: 'The server map has been set.',
-  })
-  @Post(':serverAddress/wipes')
-  setMap(
-    @Param('serverAddress') serverAddress: string,
-    map: string,
-  ): Promise<Server> {
-    return this.serversService.setMap(serverAddress, map);
-  }
+  // @ApiOperation({ summary: 'Set a map for server' })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: 'The server map has been set.',
+  // })
+  // @Post(':serverAddress/wipes')
+  // setMap(
+  //   @Param('serverAddress') serverAddress: string,
+  //   map: string,
+  // ): Promise<Server> {
+  //   return this.serversService.setMap(serverAddress, map);
+  // }
 }

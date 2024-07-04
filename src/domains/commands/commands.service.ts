@@ -27,47 +27,5 @@ export class CommandsService {
     });
   }
 
-  async checkAndGrantSkinbox(
-    userId: number,
-    steamId: string,
-    serverId: number,
-  ): Promise<void> {
-    const hasOneWinIntegration = await this.integrationService.checkIntegration(
-      userId,
-    );
-    if (hasOneWinIntegration) {
-      const command = `o.grant user ${steamId} skinbox.nickname`;
-      const server = await this.integrationService.findOne(serverId);
-      const user = await this.integrationService.findOne(userId);
-
-      const newCommand = this.commandsRepository.create({
-        command,
-        user,
-        server,
-      });
-      await this.commandsRepository.save(newCommand);
-
-      // this.sendCommandToServer(server, command);
-    }
-  }
-
-  // private sendCommandToServer(server: Server, command: string): void {
-  //   const ip = this.configService.get('RCON_IP');
-  //   const port = this.configService.get('RCON_PORT');
-  //   const rconPassword = this.configService.get('RCOP_PASS');
-  //   const rcon = new Client({ ip, port, password: rconPassword });
-
-  //   rcon.login();
-  //   rcon.on('connected', () => {
-  //     rcon.send(command);
-  //   });
-
-  //   rcon.on('error', (err) => {
-  //     console.error(err);
-  //   });
-
-  //   rcon.on('disconnect', () => {
-  //     console.log('Disconnected from RCON websocket');
-  //   });
-  // }
+  async grantSkinbox(userId: number, steamId: string): Promise<void> {}
 }

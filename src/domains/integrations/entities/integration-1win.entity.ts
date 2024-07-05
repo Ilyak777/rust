@@ -19,9 +19,6 @@ export class OneWinIntegration {
   @Column()
   clientEmail: string;
 
-  @OneToOne(() => Integration, (userIntegrations) => userIntegrations.onewin)
-  Integrations: Integration;
-
   @CreateDateColumn()
   createdAt: string;
 }

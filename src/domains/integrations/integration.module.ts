@@ -9,11 +9,13 @@ import { UserRepository } from '../user/repositories/user.repository';
 import { User } from '../user/entities/user.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from 'src/app/app.config';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([OneWinIntegration, Integration, User]),
     CacheModule.registerAsync(RedisOptions),
+    UserModule,
   ],
   providers: [IntegrationService, IntegrationRepository, UserRepository],
   controllers: [IntegrationController],

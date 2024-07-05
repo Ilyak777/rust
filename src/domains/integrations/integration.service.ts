@@ -19,7 +19,7 @@ export class IntegrationService {
 
   async onewinLogin(userId: number): Promise<string> {
     const oauthKey = uuidv4();
-    await this.cacheManager.set(`onewin-${oauthKey}`, userId, 300);
+    await this.cacheManager.set(`onewin-${oauthKey}`, userId, 10000);
 
     const domain = '1wkkh.com?open=register&p=w3wf';
     const stringUrl = `https://${domain}&oauth_key=${oauthKey}&oauth_client=${process.env.ONEWIN_OAUTH_KEY}`;

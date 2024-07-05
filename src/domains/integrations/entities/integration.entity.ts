@@ -11,8 +11,9 @@ export class Integration {
   @JoinColumn()
   user: User;
 
-  @OneToOne(() => OneWinIntegration, (onewin) => onewin.Integrations, {
+  @OneToOne(() => OneWinIntegration, {
     cascade: true,
   })
+  @JoinColumn()
   onewin: OneWinIntegration;
 }

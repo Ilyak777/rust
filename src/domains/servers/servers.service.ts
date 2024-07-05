@@ -36,10 +36,19 @@ export class ServersService {
   //   }
   // }
 
-  // startChecking = () => {
-  //   const rcon_host = '62.122.215.98';
-  //   const rcon_port = 38015;
-  //   const rcon_password = 'kGkMdsdWersajwsUc1H';
+  // startChecking = async () => {
+  //   const servers = await this.serversRepository.find();
+  //   const serverInfos = Promise.all(
+  //     servers.map(async (server) => {
+  //       let { address } = server;
+  //       address = address.replace(/"/g, '');
+
+  //       const [rcon_host, rcon_port] = address.split(':');
+  //       const port = parseInt(rcon_port, 10) + 1;
+  //       const rcon_password = 'kGkMdsdWersajwsUc1H';
+  //     }),
+  //   );
+
   //   console.log(123);
 
   //   const rcon = new Client({
@@ -47,6 +56,7 @@ export class ServersService {
   //     port: rcon_port,
   //     password: rcon_password,
   //   });
+
   //   try {
   //     rcon.login();
   //   } catch (error) {
@@ -56,9 +66,10 @@ export class ServersService {
   //   rcon.on('connected', () => {
   //     console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
 
-  //     rcon.send('serverinfo', 'M3RCURRRY', 333);
-  //     rcon.send('server.levelurl', 'M3RCURRRY', 333);
-  //     rcon.send('');
+  //     // ПОЛУЧЕНИЕ КАРТЫ СЕРВЕРА
+  //     rcon.send('serverinfo', 'M3RCURRRY', 3);
+  //     // ПОЛУЧЕНИЕ ИНФЫ О СЕРВЕРЕ
+  //     rcon.send('server.levelurl', 'M3RCURRRY', 3);
   //   });
 
   //   rcon.on('error', (err) => {
@@ -191,26 +202,26 @@ export class ServersService {
     return this.wipesRepository.save(wipe);
   }
 
-  // async setMap(serverAddress: string, map: string): Promise<Server> {
-  //   console.log('----------->', serverAddress);
-  //   const x = await this.serversRepository.find();
-  //   console.log('===================>', x);
+  async setMap(serverAddress: string, map: string): Promise<Server> {
+    console.log('----------->', serverAddress);
+    const x = await this.serversRepository.find();
+    console.log('===================>', x);
 
-  //   const server = await this.serversRepository.findOne({
-  //     where: { address: serverAddress.toString().trimStart().trimEnd() },
-  //   });
+    const server = await this.serversRepository.findOne({
+      where: { address: serverAddress.toString().trimStart().trimEnd() },
+    });
 
-  //   if (!server) {
-  //     throw new Error('Server not found');
-  //   }
+    if (!server) {
+      throw new Error('Server not found');
+    }
 
-  //   if (server.rustMapsId) {
-  //     return server;
-  //   }
+    if (server.rustMapsId) {
+      return server;
+    }
 
-  //   server.rustMapsId = map;
+    server.rustMapsId = map;
 
-  //   const serverToReturn = await this.serversRepository.save(server);
-  //   return serverToReturn;
-  // }
+    const serverToReturn = await this.serversRepository.save(server);
+    return serverToReturn;
+  }
 }

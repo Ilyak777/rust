@@ -21,6 +21,7 @@ export class IntegrationController {
   async onewinLogin(@Req() req: Request) {
     return this.service.onewinLogin(Number(req['user'].userId));
   }
+
   @Get('callback')
   @HttpCode(200)
   async onewinWebhook(@Query() query: OnewinDto) {

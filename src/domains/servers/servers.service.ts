@@ -212,8 +212,6 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
     let image;
     if (map.includes('files.facepunch.com')) {
-      console.log(12312312312331231232131323312312);
-
       const [size, seed] = map.split('/').at(-1).split('.').slice(1, 3);
 
       const response = await axios.get(

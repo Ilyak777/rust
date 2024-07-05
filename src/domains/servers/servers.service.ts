@@ -129,11 +129,7 @@ export class ServersService {
         } else {
           console.log(`Cache hit for server ${host}:${port}`);
         }
-
-        return {
-          ...server,
-          serverOnline,
-        };
+        return Object.assign(server, serverOnline);
       }),
     );
 
@@ -170,8 +166,10 @@ export class ServersService {
         host: address,
         port: port,
       });
-
-      return allInfo.numplayers;
+      return {
+        serverOnline: allInfo.numplayers,
+        maxServerOnline: allInfo.maxplayers,
+      };
     } catch (error) {
       console.log(error);
       return null;

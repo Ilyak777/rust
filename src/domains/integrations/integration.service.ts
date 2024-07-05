@@ -31,6 +31,8 @@ export class IntegrationService {
     const userId = await this.cacheManager.get<number>(`onewin-${payload.ok}`);
     this.cacheManager.del(`onewin-${payload.ok}`);
     const oneExists = await this.repo.getOneWinIntegration(payload.oci);
+    console.info('checked user');
+
     if (oneExists) {
       throw new BadRequestException('onewin-already-exists');
     }
@@ -41,14 +43,14 @@ export class IntegrationService {
 
   async checkOneWinIntegration(
     userId: number,
-    clienId: string,
+    clientId: string,
     clientEmail: string,
   ) {
-    const integration = await this.repo.getOneWinIntegration(clienId);
+    const integration = await this.repo.getOneWinIntegration(clientId);
 
     const result =
       integration === null
-        ? await this.repo.createOneWinIntegration(userId, clienId, clientEmail)
+        ? await this.repo.createOneWinIntegration(userId, clientId, clientEmail)
         : await this.repo.updateOneWinIntegration(integration.id, clientEmail);
 
     return result;

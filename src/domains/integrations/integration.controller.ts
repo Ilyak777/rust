@@ -25,6 +25,8 @@ export class IntegrationController {
   @Get('callback')
   @HttpCode(200)
   async onewinWebhook(@Query() query: OnewinDto) {
+    console.info('checking 1win callback');
+
     await this.service.onewinWebhook(query);
     return true;
   }

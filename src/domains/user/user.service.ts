@@ -42,6 +42,10 @@ export class UserService {
     return this.repo.findBySteamId(steamId);
   }
 
+  async findUserIntegration(id: number) {
+    return this.repo.findUserIntegration(id);
+  }
+
   async getUserProfile(userId: number) {
     return this.repo.getUserProfile(userId);
   }

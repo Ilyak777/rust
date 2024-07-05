@@ -16,6 +16,7 @@ import { StatisticsModule } from '../statistics/statistics.module';
 import { GameStats } from '../statistics/entities/game-statistics.entity';
 import { SteamStats } from '../statistics/entities/steam-statistics.entity';
 import { StatisticsService } from '../statistics/statistics.service';
+import { IntegrationModule } from '../integrations/integration.module';
 
 @Module({
   imports: [

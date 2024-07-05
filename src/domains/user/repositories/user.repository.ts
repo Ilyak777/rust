@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { Integration } from 'src/domains/integrations/entities/integration.entity';
 
 @Injectable()
 export class UserRepository {
@@ -22,10 +23,19 @@ export class UserRepository {
         'profileData',
         'profileData.socials',
         'steamStats',
-        'gameStats',
-        'integrations',
+        'integration',
+        'integration.onewin',
       ],
     });
+  }
+
+  public async findUserIntegration(id: number): Promise<Integration> {
+    const user = await this.repository.findOne({
+      where: { id },
+      relations: ['integration', 'integration.onewin'],
+    });
+
+    return user.integration;
   }
 
   public async getUserProfile(id: number): Promise<User> {

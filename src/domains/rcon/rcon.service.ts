@@ -11,7 +11,6 @@ export class RconService {
     const rcon_host = '62.122.215.98';
     const rcon_port = 38015;
     const rcon_password = 'kGkMdsdWersajwsUc1H';
-    console.log(123);
 
     this.rcon = new Client({
       ip: rcon_host,
@@ -20,9 +19,7 @@ export class RconService {
     });
     try {
       this.rcon.login();
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
 
     this.rcon.on('connected', () => {
       console.log(`Connected to ${this.rcon.ws.ip}:${this.rcon.ws.port}`);

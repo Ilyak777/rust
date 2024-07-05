@@ -159,7 +159,6 @@ export class ServersService {
         const port = parseInt(portStr, 10) + 1;
         const cacheKey = `server-info-${host}:${port}`;
         const x = await this.cacheManager.get(cacheKey);
-        console.log(x);
 
         await this.cacheManager.del(cacheKey);
         console.log(`Deleted cache for ${cacheKey}`);
@@ -203,9 +202,7 @@ export class ServersService {
   }
 
   async setMap(serverAddress: string, map: string): Promise<Server> {
-    console.log('----------->', serverAddress);
     const x = await this.serversRepository.find();
-    console.log('===================>', x);
 
     const server = await this.serversRepository.findOne({
       where: { address: serverAddress.toString().trimStart().trimEnd() },

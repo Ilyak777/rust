@@ -27,8 +27,6 @@ export class SteamStrategy extends PassportStrategy(Strategy, 'steam') {
       steamId: profile.id,
     };
 
-    console.log(user);
-
     try {
       const savedUser = await this.authService.validateAndSaveUser(user);
       await this.authService.updateUserStats(user);

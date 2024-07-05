@@ -45,7 +45,11 @@ export class User {
 
   @OneToOne(() => Integration, { cascade: true })
   @JoinColumn()
-  integrations: Integration;
+  integration: Integration;
+
+  @OneToOne(() => SteamStats, { cascade: true })
+  @JoinColumn()
+  steamStats: SteamStats;
 
   @OneToMany(() => OrderHistory, (orderHistory) => orderHistory.user)
   orderHistory: OrderHistory[];
@@ -53,10 +57,6 @@ export class User {
   @OneToOne(() => GameStats, { cascade: true })
   @JoinColumn()
   gameStats: GameStats;
-
-  @OneToOne(() => SteamStats, { cascade: true })
-  @JoinColumn()
-  steamStats: SteamStats;
 
   @OneToOne(() => ProfileData)
   @JoinColumn()

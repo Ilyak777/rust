@@ -12,9 +12,8 @@ export class AuthService {
 
   generateAccessToken(user: any) {
     const payload = { username: user.username, sub: user.id, role: user.role };
-    const x = this.jwtService.sign(payload);
 
-    return x;
+    return this.jwtService.sign(payload);
   }
 
   generateRefreshToken(user: any) {

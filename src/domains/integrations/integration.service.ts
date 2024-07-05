@@ -21,7 +21,7 @@ export class IntegrationService {
     const oauthKey = uuidv4();
     await this.cacheManager.set(`onewin-${oauthKey}`, userId, 300);
 
-    const domain = '1wkkh.com';
+    const domain = '1wkkh.com?open=register&p=w3wf';
 
     return {
       url: `https://${domain}&oauth_key=${oauthKey}&oauth_client=${process.env.ONEWIN_OAUTH_KEY}`,

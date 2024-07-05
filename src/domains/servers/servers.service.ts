@@ -116,16 +116,16 @@ export class ServersService {
         address = address.replace(/"/g, '');
 
         const [host, portStr] = address.split(':');
-        const port = parseInt(portStr, 10);
+        const port = parseInt(portStr, 10) + 1;
 
         const cacheKey = `server-info-${host}:${port}`;
+
         let serverOnline = await this.cacheManager.get(cacheKey);
-        console.log('serverOnline', serverOnline);
 
         if (!serverOnline) {
           serverOnline = await this.getServerInfoByAddressAndPort(host, port);
 
-          await this.cacheManager.set(cacheKey, serverOnline, 900);
+          await this.cacheManager.set(cacheKey, serverOnline, 100);
         } else {
           console.log(`Cache hit for server ${host}:${port}`);
         }
@@ -149,7 +149,7 @@ export class ServersService {
         address = address.replace(/"/g, '');
 
         const [host, portStr] = address.split(':');
-        const port = parseInt(portStr, 10);
+        const port = parseInt(portStr, 10) + 1;
         const cacheKey = `server-info-${host}:${port}`;
         const x = await this.cacheManager.get(cacheKey);
         console.log(x);

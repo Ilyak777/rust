@@ -22,14 +22,10 @@ export class UserService {
   ) {}
 
   async createUser(user: User) {
-    console.log('useruser', user);
-
     return this.repo.create(user);
   }
 
   async findById(userId: number) {
-    console.log('here');
-
     return this.repo.findById(userId);
   }
 

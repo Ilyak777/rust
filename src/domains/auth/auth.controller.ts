@@ -31,9 +31,13 @@ export class AuthController {
   @Get('steam/return')
   @UseGuards(AuthGuard('steam'))
   async steamAuthRedirect(@Req() req, @Res() res) {
+    console.log('Getting user');
     const user = req.user;
+    console.log('Generating tokens');
     const accessToken = this.authService.generateAccessToken(user);
     const refreshToken = this.authService.generateRefreshToken(user);
+
+    console.log('Redirecting user');
 
     return res.redirect(
       `/?access_token=${accessToken}&refresh_token=${refreshToken}`,

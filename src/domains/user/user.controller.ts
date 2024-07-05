@@ -35,6 +35,8 @@ export class UserController {
   @Get('me')
   async getMe(@Req() req) {
     const userId = req.user.userId;
+    console.info('------->', req.user);
+
     return this.userService.getMe(userId);
   }
 

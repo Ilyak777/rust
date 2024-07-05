@@ -34,6 +34,8 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+    console.info('========>', user);
+
     return user;
   }
 

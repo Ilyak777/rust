@@ -125,7 +125,7 @@ export class ServersService {
         if (!serverOnline) {
           serverOnline = await this.getServerInfoByAddressAndPort(host, port);
 
-          await this.cacheManager.set(cacheKey, serverOnline, 100);
+          await this.cacheManager.set(cacheKey, serverOnline, 100000);
         } else {
           console.log(`Cache hit for server ${host}:${port}`);
         }

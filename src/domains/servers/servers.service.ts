@@ -10,6 +10,7 @@ import { Server } from './entity/server.entity';
 import { ServerWipe } from './entity/server-wipe.entity';
 import { Cache } from '@nestjs/cache-manager';
 import { Client } from 'rustrcon';
+import axios from 'axios';
 
 declare function require(moduleName: string): any;
 const { GameDig } = require('gamedig');
@@ -47,7 +48,6 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
         const [rcon_host, rcon_port] = address.split(':');
         const port = parseInt(rcon_port, 10) + 10000;
-        const rcon_password = 'kGkMdsdWersajwsUc1H';
 
         const rcon = new Client({
           ip: rcon_host,
@@ -63,10 +63,12 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
         rcon.on('connected', () => {
           console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
-          // Get server map
+
           rcon.send('serverinfo', 'M3RCURRRY', 333);
-          // Get server info
+
           rcon.send('server.levelurl', 'M3RCURRRY', 222);
+
+          rcon.send('playerlist', 'M3RCURRRY', 444);
         });
 
         rcon.on('error', (err) => {
@@ -74,21 +76,21 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         });
 
         rcon.on('disconnect', () => {
-          console.log('Disconnected from RCON websocket');
+          // console.log('Disconnected from RCON websocket');
         });
 
         rcon.on('message', (message) => {
-          console.log(message);
+          // console.log(message);
 
           if (message.Identifier === 222) {
             try {
-              this.setMap(rcon_host + ':' + rcon_port, message.content);
+              this.getAndSetMap(rcon_host + ':' + rcon_port, message.content);
               console.log('Server info:', message);
             } catch (error) {
               console.log(error);
             }
-          } else if (message.Identifier === 222) {
-            console.log('Level URL:', message);
+          }
+          if (message.Identifier === 444) {
           }
         });
       }),
@@ -195,7 +197,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     return this.wipesRepository.save(wipe);
   }
 
-  async setMap(serverAddress: string, map: string): Promise<Server> {
+  async getAndSetMap(serverAddress: string, map: string): Promise<Server> {
     const server = await this.serversRepository.findOne({
       where: { address: serverAddress.trim() },
     });
@@ -208,7 +210,40 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
       return server;
     }
 
-    server.rustMapsId = map;
+    let image;
+    if (map.includes('files.facepunch.com')) {
+      console.log(12312312312331231232131323312312);
+
+      const [size, seed] = map.split('/').at(-1).split('.').slice(1, 3);
+
+      const response = await axios.get(
+        `https://api.rustmaps.com/v4/maps/${size}/${seed}`,
+        {
+          headers: {
+            Accept: 'application/json',
+            'X-API-Key': 'd88bfe58-d6e5-470c-b007-cd3dd8482eaa',
+          },
+        },
+      );
+
+      image = response.data.data.imageIconUrl;
+    } else {
+      const id = map.split('/').at(4);
+
+      const response = await axios.get(
+        `https://api.rustmaps.com/v4/maps/${id}`,
+        {
+          headers: {
+            Accept: 'application/json',
+            'X-API-Key': 'd88bfe58-d6e5-470c-b007-cd3dd8482eaa',
+          },
+        },
+      );
+
+      image = response.data.data.imageIconUrl;
+    }
+
+    server.rustMapsId = image;
     return this.serversRepository.save(server);
   }
 }

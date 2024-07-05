@@ -25,7 +25,8 @@ export class IntegrationRepository {
     const userIntegrations = await this.userIntegration.findOne({
       where: { user: { id: userId } },
     });
-    if (userIntegrations.onewin) {
+
+    if (userIntegrations && userIntegrations.onewin) {
       throw new BadRequestException('onewin-already-exists');
     }
     const integration = this.oneWinRepository.create({

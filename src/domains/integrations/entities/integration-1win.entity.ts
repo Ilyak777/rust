@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   OneToOne,
+  CreateDateColumn,
 } from 'typeorm';
 import { Integration } from './integration.entity';
 
@@ -21,6 +22,6 @@ export class OneWinIntegration {
   @OneToOne(() => Integration, (userIntegrations) => userIntegrations.onewin)
   Integrations: Integration;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: string;
 }

@@ -27,6 +27,9 @@ export class Server {
   @Column({ nullable: true })
   rustMapsId: string;
 
+  @Column({ nullable: true })
+  pass: string;
+
   @OneToMany(() => ServerWipe, (wipe) => wipe.server)
   wipes: ServerWipe[];
 

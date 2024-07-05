@@ -15,7 +15,7 @@ declare function require(moduleName: string): any;
 const { GameDig } = require('gamedig');
 
 @Injectable()
-export class ServersService {
+export class ServersService implements OnModuleInit, OnModuleDestroy {
   private rcon: Client;
 
   constructor(
@@ -26,77 +26,74 @@ export class ServersService {
     @Inject(Cache) private cacheManager: Cache,
   ) {}
 
-  // onModuleInit() {
-  //   this.startChecking();
-  // }
+  async onModuleInit() {
+    console.log('Starting server checking...');
+    await this.startChecking();
+  }
 
-  // onModuleDestroy() {
-  //   if (this.rcon) {
-  //     this.rcon.disconnect();
-  //   }
-  // }
+  onModuleDestroy() {
+    if (this.rcon) {
+      this.rcon.disconnect();
+    }
+  }
 
-  // startChecking = async () => {
-  //   const servers = await this.serversRepository.find();
-  //   const serverInfos = Promise.all(
-  //     servers.map(async (server) => {
-  //       let { address } = server;
-  //       address = address.replace(/"/g, '');
+  private async startChecking() {
+    const servers = await this.serversRepository.find();
+    await Promise.all(
+      servers.map(async (server) => {
+        let { address, pass } = server;
 
-  //       const [rcon_host, rcon_port] = address.split(':');
-  //       const port = parseInt(rcon_port, 10) + 1;
-  //       const rcon_password = 'kGkMdsdWersajwsUc1H';
-  //     }),
-  //   );
+        address = address.replace(/"/g, '');
 
-  //   console.log(123);
+        const [rcon_host, rcon_port] = address.split(':');
+        const port = parseInt(rcon_port, 10) + 10000;
+        const rcon_password = 'kGkMdsdWersajwsUc1H';
 
-  //   const rcon = new Client({
-  //     ip: rcon_host,
-  //     port: rcon_port,
-  //     password: rcon_password,
-  //   });
+        const rcon = new Client({
+          ip: rcon_host,
+          port: port,
+          password: pass,
+        });
 
-  //   try {
-  //     rcon.login();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
+        try {
+          await rcon.login();
+        } catch (error) {
+          console.log(error);
+        }
 
-  //   rcon.on('connected', () => {
-  //     console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
+        rcon.on('connected', () => {
+          console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
+          // Get server map
+          rcon.send('serverinfo', 'M3RCURRRY', 333);
+          // Get server info
+          rcon.send('server.levelurl', 'M3RCURRRY', 222);
+        });
 
-  //     // ПОЛУЧЕНИЕ КАРТЫ СЕРВЕРА
-  //     rcon.send('serverinfo', 'M3RCURRRY', 3);
-  //     // ПОЛУЧЕНИЕ ИНФЫ О СЕРВЕРЕ
-  //     rcon.send('server.levelurl', 'M3RCURRRY', 3);
-  //   });
+        rcon.on('error', (err) => {
+          console.error(err);
+        });
 
-  //   rcon.on('error', (err) => {
-  //     console.error(err);
-  //   });
+        rcon.on('disconnect', () => {
+          console.log('Disconnected from RCON websocket');
+        });
 
-  //   rcon.on('disconnect', () => {
-  //     console.log('Disconnected from RCON websocket');
-  //   });
+        rcon.on('message', (message) => {
+          console.log(message);
 
-  //   rcon.on('message', (message) => {
-  //     console.log(message);
-
-  //     if (message.Identifier === 333) {
-  //       try {
-  //         console.log(rcon_host + ':' + rcon_port);
-
-  //         this.setMap(rcon_host + ':' + rcon_port, message.content);
-  //         console.log('Server info:', message);
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     } else if (message.Identifier === 222) {
-  //       console.log('Level URL:', message);
-  //     }
-  //   });
-  // };
+          if (message.Identifier === 222) {
+            try {
+              this.setMap(rcon_host + ':' + rcon_port, message.content);
+              console.log('Server info:', message);
+            } catch (error) {
+              console.log(error);
+            }
+          } else if (message.Identifier === 222) {
+            console.log('Level URL:', message);
+          }
+        });
+      }),
+    );
+  }
 
   async getServers(): Promise<Server[]> {
     return this.serversRepository.find();
@@ -135,7 +132,6 @@ export class ServersService {
 
         if (!serverOnline) {
           serverOnline = await this.getServerInfoByAddressAndPort(host, port);
-
           await this.cacheManager.set(cacheKey, serverOnline, 100000);
         } else {
           console.log(`Cache hit for server ${host}:${port}`);
@@ -149,7 +145,6 @@ export class ServersService {
 
   async clearAllServerCaches(): Promise<void> {
     const servers = await this.serversRepository.find();
-
     await Promise.all(
       servers.map(async (server) => {
         let { address } = server;
@@ -158,7 +153,6 @@ export class ServersService {
         const [host, portStr] = address.split(':');
         const port = parseInt(portStr, 10) + 1;
         const cacheKey = `server-info-${host}:${port}`;
-        const x = await this.cacheManager.get(cacheKey);
 
         await this.cacheManager.del(cacheKey);
         console.log(`Deleted cache for ${cacheKey}`);
@@ -202,10 +196,8 @@ export class ServersService {
   }
 
   async setMap(serverAddress: string, map: string): Promise<Server> {
-    const x = await this.serversRepository.find();
-
     const server = await this.serversRepository.findOne({
-      where: { address: serverAddress.toString().trimStart().trimEnd() },
+      where: { address: serverAddress.trim() },
     });
 
     if (!server) {
@@ -217,8 +209,6 @@ export class ServersService {
     }
 
     server.rustMapsId = map;
-
-    const serverToReturn = await this.serversRepository.save(server);
-    return serverToReturn;
+    return this.serversRepository.save(server);
   }
 }

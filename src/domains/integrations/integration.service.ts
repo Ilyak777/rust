@@ -17,15 +17,14 @@ export class IntegrationService {
     private userRepository: Repository<User>,
   ) {}
 
-  async onewinLogin(userId: number) {
+  async onewinLogin(userId: number): Promise<string> {
     const oauthKey = uuidv4();
     await this.cacheManager.set(`onewin-${oauthKey}`, userId, 300);
 
     const domain = '1wkkh.com?open=register&p=w3wf';
+    const stringUrl = `https://${domain}&oauth_key=${oauthKey}&oauth_client=${process.env.ONEWIN_OAUTH_KEY}`;
 
-    return {
-      url: `https://${domain}&oauth_key=${oauthKey}&oauth_client=${process.env.ONEWIN_OAUTH_KEY}`,
-    };
+    return stringUrl;
   }
 
   async onewinWebhook(payload: OnewinDto) {

@@ -30,12 +30,12 @@ export class UserController {
     status: 200,
     description: 'User information retrieved successfully.',
   })
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@Req() req) {
-    // const userId = req.user.userId;
-    return this.userService.getMe(2);
+    const userId = req.user.userId;
+    return this.userService.getMe(userId);
   }
 
   @ApiOperation({ summary: 'Get user by ID' })

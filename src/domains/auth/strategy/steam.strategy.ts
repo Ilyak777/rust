@@ -12,13 +12,13 @@ export class SteamStrategy extends PassportStrategy(Strategy, 'steam') {
   ) {
     super({
       returnURL: `https://api-1w.rustresort.com/auth/steam/return`,
-      realm: configService.get('FRONTEND_URL'),
+      // realm: configService.get('FRONTEND_URL'),
+      realm: `https://api-1w.rustresort.com`,
       apiKey: configService.get('STEAM_API_KEY'),
     });
   }
 
   async validate(identifier: string, profile: any, done: Function) {
-    console.log('VALIDATION');
     if (!profile) {
       return done(new UnauthorizedException(), false);
     }
@@ -31,10 +31,8 @@ export class SteamStrategy extends PassportStrategy(Strategy, 'steam') {
     try {
       const savedUser = await this.authService.validateAndSaveUser(user);
       await this.authService.updateUserStats(user);
-      console.log('VALIDATION SUCCESS');
       done(null, savedUser);
     } catch (error) {
-      console.log('VALIDATION FAILED');
       done(error, false);
     }
   }

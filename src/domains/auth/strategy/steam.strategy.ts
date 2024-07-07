@@ -11,7 +11,7 @@ export class SteamStrategy extends PassportStrategy(Strategy, 'steam') {
     private authService: AuthService,
   ) {
     super({
-      returnURL: `${configService.get('FRONTEND_URL')}`,
+      returnURL: `https://api-1w.rustresort.com/auth/steam/return`,
       realm: configService.get('FRONTEND_URL'),
       apiKey: configService.get('STEAM_API_KEY'),
     });

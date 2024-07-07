@@ -40,7 +40,7 @@ export class AuthController {
     console.log('Redirecting user');
 
     return res.redirect(
-      `/?access_token=${accessToken}&refresh_token=${refreshToken}`,
+      `http://localhost:3001/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`,
     );
   }
 }

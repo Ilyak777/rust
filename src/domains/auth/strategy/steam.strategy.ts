@@ -11,7 +11,7 @@ export class SteamStrategy extends PassportStrategy(Strategy, 'steam') {
     private authService: AuthService,
   ) {
     super({
-      returnURL: `https://api-1w.rustresort.com/auth/steam/return`,
+      returnURL: `${configService.get('FRONTEND_URL')}`,
       realm: configService.get('FRONTEND_URL'),
       apiKey: configService.get('STEAM_API_KEY'),
     });
@@ -30,11 +30,8 @@ export class SteamStrategy extends PassportStrategy(Strategy, 'steam') {
     try {
       const savedUser = await this.authService.validateAndSaveUser(user);
       await this.authService.updateUserStats(user);
-      console.log('SUCCESS');
       done(null, savedUser);
     } catch (error) {
-      console.log('ERROR');
-      console.log(error);
       done(error, false);
     }
   }

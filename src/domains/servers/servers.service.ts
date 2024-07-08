@@ -19,6 +19,7 @@ const { GameDig } = require('gamedig');
 
 @Injectable()
 export class ServersService implements OnModuleInit, OnModuleDestroy {
+  private rconClients: Map<number, Client> = new Map();
   private rcon: Client;
   private playerlistInterval: NodeJS.Timeout;
 
@@ -37,9 +38,9 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleDestroy() {
-    if (this.rcon) {
-      this.rcon.disconnect();
-    }
+    this.rconClients.forEach((rcon) => {
+      rcon.disconnect();
+    });
 
     if (this.playerlistInterval) {
       clearInterval(this.playerlistInterval);
@@ -115,6 +116,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
         try {
           await rcon.login();
+          this.rconClients.set(server.id, rcon);
         } catch (error) {
           console.log(error);
         }
@@ -126,9 +128,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
           rcon.send('server.levelurl', 'M3RCURRRY', 222);
 
-          this.playerlistInterval = setInterval(() => {
-            this.rcon.send('playerlist', 'M3RCURRRY', 444);
-          }, 90 * 1000);
+          rcon.send('playerlist', 'M3RCURRRY', 444);
         });
 
         rcon.on('error', (err) => {
@@ -153,14 +153,13 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
           }
           if (message.Identifier === 333) {
             const cacheKey = `server-info-${rcon_host}:${port}`;
-
             const cachedResult = await this.cacheManager.get(cacheKey);
             if (cachedResult) {
               await this.cacheManager.del(cacheKey);
             }
             const serverOnline = {
               serverOnline: message.content.Players,
-              maxServerOnline: message.content.maxPlayers,
+              maxServerOnline: message.content.MaxPlayers,
             };
             await this.cacheManager.set(cacheKey, serverOnline, 10000);
           }
@@ -198,11 +197,22 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         address = address.replace(/"/g, '');
 
         const [host, portStr] = address.split(':');
-        const port = parseInt(portStr, 10) + 1;
+        const port = parseInt(portStr, 10) + 10000;
 
         const cacheKey = `server-info-${host}:${port}`;
 
         let serverOnline = await this.cacheManager.get(cacheKey);
+
+        if (!serverOnline) {
+          const rcon = this.rconClients.get(server.id);
+          if (rcon) {
+            rcon.send('serverinfo', 'M3RCURRRY', 333);
+          } else {
+            console.log(`No RCON client for server ${server.id}`);
+          }
+
+          serverOnline = await this.cacheManager.get(cacheKey);
+        }
 
         console.log(`Cache hit for server ${host}:${port}`);
 

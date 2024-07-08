@@ -57,8 +57,6 @@ export class AuthService {
   }
 
   generateAccessToken(user: any) {
-    console.log('===========>', user);
-
     const payload = { username: user.username, sub: user.id, role: user.role };
     return this.jwtService.sign(payload);
   }
@@ -81,7 +79,7 @@ export class AuthService {
 
       await this.userService.updateUser(existingUser.id, existingUser);
     } else {
-      existingUser = this.userService.createUser(user)[0];
+      existingUser = await this.userService.createUser(user);
     }
 
     return existingUser;

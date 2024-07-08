@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CommandsService } from '../commands/commands.service';
-import { ServersService } from '../servers/servers.service';
+import { ServersService } from '../servers/services/servers.service';
 
 @Injectable()
 export class IntegrationService {

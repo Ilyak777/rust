@@ -12,7 +12,7 @@ import { UserPurchasedItems } from '../user/entities/user-purchased-items.entity
 import { OrderHistory } from '../user/entities/user-order-history.entity';
 import { Cache } from '@nestjs/cache-manager';
 import { CreateItemDTO } from './dto/create-item.input.dto';
-import { ServersService } from '../servers/servers.service';
+import { ServersService } from '../servers/services/servers.service';
 import { ShopItemTypeE } from './enums/shop-item.enum';
 import { SetItems } from './entities/set-items.entity';
 

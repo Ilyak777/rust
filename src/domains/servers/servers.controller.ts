@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { ServersService } from './servers.service';
+import { ServersService } from './services/servers.service';
 import { Server } from './entity/server.entity';
 import { ServerWipe } from './entity/server-wipe.entity';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';

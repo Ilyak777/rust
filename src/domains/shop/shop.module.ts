@@ -7,7 +7,7 @@ import { User } from '../user/entities/user.entity';
 import { UserPurchasedItems } from '../user/entities/user-purchased-items.entity';
 import { OrderHistory } from '../user/entities/user-order-history.entity';
 import { SetItems } from './entities/set-items.entity';
-import { ServersService } from '../servers/servers.service';
+import { ServersService } from '../servers/services/servers.service';
 import { Server } from '../servers/entity/server.entity';
 import { ServerWipe } from '../servers/entity/server-wipe.entity';
 import { CommandsService } from '../commands/commands.service';

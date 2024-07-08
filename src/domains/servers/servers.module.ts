@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ServersService } from './servers.service';
-import { ServersController } from './servers.contoller';
+import { ServersService } from './services/servers.service';
+import { ServersController } from './servers.controller';
 import { Server } from './entity/server.entity';
 import { ServerWipe } from './entity/server-wipe.entity';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -18,6 +18,7 @@ import { UserPurchasedItems } from '../user/entities/user-purchased-items.entity
 import { SteamStats } from '../statistics/entities/steam-statistics.entity';
 import { GameStats } from '../statistics/entities/game-statistics.entity';
 import { Timeout } from '@nestjs/schedule';
+import { RconService } from './services/rcon.service';
 
 @Global()
 @Module({
@@ -42,8 +43,9 @@ import { Timeout } from '@nestjs/schedule';
     UserRepository,
     UserPurchasedItemsRepository,
     StatisticsService,
+    RconService,
   ],
   controllers: [ServersController],
-  exports: [ServersService],
+  exports: [ServersService, RconService],
 })
 export class ServersModule {}

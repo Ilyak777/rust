@@ -65,10 +65,8 @@ export class UserRepository {
           'profileData',
           'profileData.socials',
           'steamStats',
-          'gameStats',
-          'purchasedItems',
-          'orderHistory',
           'integration',
+          'integration.onewin',
         ],
       });
     } catch (error) {

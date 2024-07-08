@@ -57,6 +57,8 @@ export class AuthService {
   }
 
   generateAccessToken(user: any) {
+    console.log('===========>', user);
+
     const payload = { username: user.username, sub: user.id, role: user.role };
     return this.jwtService.sign(payload);
   }

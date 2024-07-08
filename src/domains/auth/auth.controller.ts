@@ -33,23 +33,14 @@ export class AuthController {
   @Get('steam/return')
   async steamAuthReturn(@Query() query: any, @Res() res) {
     try {
-      const validationResponse = await this.authService.validateSteamResponse(
-        query,
-      );
-      const isValid = validationResponse?.['openid']['is_valid'][0] === 'true';
+      const userData = await this.authService.validateSteamResponse(query);
 
-      if (!isValid) {
+      if (!userData) {
         throw new BadRequestException('Invalid Steam login.');
       }
 
-      const steamId = query['openid.identity'].split('/').pop();
-      const user = {
-        username: steamId,
-        steamId: steamId,
-      };
-
-      const savedUser = await this.authService.validateAndSaveUser(user);
-      await this.authService.updateUserStats(user);
+      const savedUser = await this.authService.validateAndSaveUser(userData);
+      await this.authService.updateUserStats(userData);
 
       const accessToken = this.authService.generateAccessToken(savedUser);
       const refreshToken = this.authService.generateRefreshToken(savedUser);

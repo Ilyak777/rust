@@ -6,15 +6,8 @@ import {
   Redirect,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { STEAM_AUTH_URL } from './constants';
 
@@ -65,7 +58,7 @@ export class AuthController {
         `https://1w.rustresort.com/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`,
       );
     } catch (error) {
-      return res.redirect('/login?error=steam_auth_failed');
+      return res.send('Ne povezlo');
     }
   }
 }

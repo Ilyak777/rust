@@ -29,7 +29,7 @@ export class AuthController {
   })
   // @ApiBearerAuth()
   @Get('steam/return')
-  @UseGuards(AuthGuard('steam'))
+  // @UseGuards(AuthGuard('steam'))
   async steamAuthRedirect(@Req() req, @Res() res) {
     const user = req.user;
     const accessToken = this.authService.generateAccessToken(user);

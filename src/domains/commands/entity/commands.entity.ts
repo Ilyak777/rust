@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { CommandsTypeE } from '../enum/commands-type.enum';
 
 @Entity()
 export class Commands {
@@ -15,6 +16,9 @@ export class Commands {
 
   @Column()
   command: string;
+
+  @Column({ type: 'enum', enum: CommandsTypeE })
+  type: CommandsTypeE;
 
   @ManyToOne(() => User, (user) => user.commands)
   @JoinColumn({ name: 'userId' })

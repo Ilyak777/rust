@@ -74,13 +74,11 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
         rcon.on('connected', () => {
           console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
 
-          rcon.send('serverinfo', 'M3RCURRRY', 333);
-
           rcon.send('server.levelurl', 'M3RCURRRY', 222);
 
-          this.playerlistInterval = setInterval(() => {
-            rcon.send('playerlist', 'M3RCURRRY', 444);
-          }, 90 * 1000);
+          rcon.send('serverinfo', 'M3RCURRRY', 333);
+
+          rcon.send('playerlist', 'M3RCURRRY', 444);
         });
 
         rcon.on('error', (err) => {
@@ -148,7 +146,6 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
 
       const steamId = match[0];
       userSet.add(steamId);
-      console.log(`User ${steamId} connected to server ${serverId}`);
     }
 
     if (message.content.includes('disconnecting')) {
@@ -157,7 +154,6 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
 
       const steamId = match[1];
       userSet.delete(steamId);
-      console.log(`User ${steamId} disconnected from server ${serverId}`);
     }
   }
 
@@ -184,6 +180,9 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
         if (rcon) {
           rcon.send(command.command, 'M3RCURRRY', 3);
           await this.commandService.deleteCommand(command);
+          console.debug(
+            `user ${command.user.steamId} was granted with a ${command.type}`,
+          );
         }
       }
     });

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Commands } from './entity/commands.entity';
 import { UserService } from '../user/user.service';
+import { CommandsTypeE } from './enum/commands-type.enum';
 
 @Injectable()
 export class CommandsService {
@@ -77,6 +78,7 @@ export class CommandsService {
     const command = `o.grant user ${userToGrant.steamId} skinbox.nickname`;
     const newCommand = this.commandsRepository.create({
       command: command,
+      type: CommandsTypeE.SKINBOX,
       user: { id: userId },
       server: { id: serverId },
     });

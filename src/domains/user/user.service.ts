@@ -62,9 +62,9 @@ export class UserService {
     return await this.itemsRepo.findAllUserItems(user);
   }
 
-  async updateUserStatistics(user: User) {
+  async updateUserStatistics(steamId: string) {
     const steamApiKey = this.configService.get<string>('STEAM_API_KEY');
-    const steamId = user.steamId;
+    const user = await this.findBySteamId(steamId);
 
     const { data: vacResponse } = await axios.get(
       `https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key=${steamApiKey}&steamids=${steamId}`,

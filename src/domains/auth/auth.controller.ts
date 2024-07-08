@@ -28,7 +28,7 @@ export class AuthController {
       }
 
       const savedUser = await this.authService.validateAndSaveUser(userData);
-      await this.authService.updateUserStats(userData);
+      await this.authService.updateUserStats(savedUser.steamId);
 
       const accessToken = this.authService.generateAccessToken(savedUser);
       const refreshToken = this.authService.generateRefreshToken(savedUser);

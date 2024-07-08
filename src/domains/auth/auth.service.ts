@@ -64,8 +64,8 @@ export class AuthService {
     return this.jwtService.sign(payload, { expiresIn: '7d' });
   }
 
-  updateUserStats(user) {
-    return this.userService.updateUserStatistics(user);
+  updateUserStats(steamId: string) {
+    return this.userService.updateUserStatistics(steamId);
   }
 
   async validateAndSaveUser(user: any): Promise<User> {

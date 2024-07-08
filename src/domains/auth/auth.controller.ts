@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Redirect, Get, Req, Res, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -29,13 +29,14 @@ export class AuthController {
   })
   // @ApiBearerAuth()
   @Get('steam/return')
+  @Redirect('http://localhost:3030', 302)
   @UseGuards(AuthGuard('steam'))
   async steamAuthRedirect(@Req() req, @Res() res) {
     const user = req.user;
     const accessToken = this.authService.generateAccessToken(user);
     const refreshToken = this.authService.generateRefreshToken(user);
-    const url = `http://localhost:3001/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
+    const url = `http://localhost:3030/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
 
-    return res.status(302).json({ url });
+    return { url };
   }
 }

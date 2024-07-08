@@ -27,9 +27,9 @@ export class AuthController {
     status: 302,
     description: 'Redirect to the frontend with access and refresh tokens.',
   })
-  // @ApiBearerAuth()
+  @ApiBearerAuth()
   @Get('steam/return')
-  // @UseGuards(AuthGuard('steam'))
+  @UseGuards(AuthGuard('steam'))
   async steamAuthRedirect(@Req() req, @Res() res) {
     const user = req.user;
     const accessToken = this.authService.generateAccessToken(user);

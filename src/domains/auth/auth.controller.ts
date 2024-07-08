@@ -34,7 +34,7 @@ export class AuthController {
     const user = req.user;
     const accessToken = this.authService.generateAccessToken(user);
     const refreshToken = this.authService.generateRefreshToken(user);
-    const url = `http://localhost:3030/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
+    const url = `http://localhost:3001/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
 
     return res.redirect(url);
   }

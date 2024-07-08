@@ -33,6 +33,8 @@ export class AuthService {
       `https://steamcommunity.com/openid/login?` + params.toString(),
     );
 
+    console.log(response.data);
+
     if (!response.data.includes('is_valid:true')) {
       return false;
     }

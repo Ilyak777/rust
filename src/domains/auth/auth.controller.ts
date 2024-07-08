@@ -1,4 +1,4 @@
-import { Controller, Redirect, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -37,6 +37,7 @@ export class AuthController {
     const refreshToken = this.authService.generateRefreshToken(user);
     const url = `http://localhost:3030/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
 
-    return { url };
+    res.setHeader('Access-Control-Allow-Origin', 'https://rustresort.com/');
+    return res.redirect(url);
   }
 }

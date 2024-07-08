@@ -33,12 +33,18 @@ export class AuthService {
       `https://steamcommunity.com/openid/login?` + params.toString(),
     );
 
-    const result = await new Promise((resolve, reject) => {
+    if (!response.data.includes('is_valid:true')) {
+      return false;
+    }
+
+    const result: object = await new Promise((resolve, reject) => {
       parseString(response.data, (err, parsedResult) => {
         if (err) return reject(err);
         resolve(parsedResult);
       });
     });
+
+    console.log(result);
 
     return result;
   }

@@ -36,6 +36,6 @@ export class AuthController {
     const refreshToken = this.authService.generateRefreshToken(user);
     const url = `http://localhost:3001/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
 
-    return res.redirect(url);
+    return res.setHeader('Location', url).status(302).end();
   }
 }

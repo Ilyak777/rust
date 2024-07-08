@@ -18,6 +18,7 @@ import { UserPurchasedItemsRepository } from '../user/repositories/user-purchase
 import { StatisticsService } from '../statistics/statistics.service';
 import { SteamStats } from '../statistics/entities/steam-statistics.entity';
 import { GameStats } from '../statistics/entities/game-statistics.entity';
+import { ServersModule } from '../servers/servers.module';
 
 @Module({
   imports: [
@@ -32,11 +33,11 @@ import { GameStats } from '../statistics/entities/game-statistics.entity';
       Commands,
       SteamStats,
       GameStats,
+      ServersModule,
     ]),
   ],
   providers: [
     ShopService,
-    ServersService,
     CommandsService,
     UserService,
     UserRepository,

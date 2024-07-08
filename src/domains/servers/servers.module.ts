@@ -5,7 +5,6 @@ import { ServersController } from './servers.contoller';
 import { Server } from './entity/server.entity';
 import { ServerWipe } from './entity/server-wipe.entity';
 import { CacheModule } from '@nestjs/cache-manager';
-import { RconModule } from '../rcon/rcon.module';
 import { RedisOptions } from 'src/app/app.config';
 import { CommandsModule } from '../commands/commands.module';
 import { CommandsService } from '../commands/commands.service';

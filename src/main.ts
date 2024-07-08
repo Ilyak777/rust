@@ -18,9 +18,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors({
-    origin: 'https://1w.rustresort.com',
-  });
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(8000, () => {
     console.log('server started at port 8000');

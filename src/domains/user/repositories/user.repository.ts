@@ -66,7 +66,6 @@ export class UserRepository {
           'profileData.socials',
           'steamStats',
           'gameStats',
-          'activeSubscriptions',
           'purchasedItems',
           'orderHistory',
           'integration',

@@ -58,6 +58,8 @@ export class AuthController {
         `https://1w.rustresort.com/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`,
       );
     } catch (error) {
+      console.log(error);
+
       return res.send('Ne povezlo');
     }
   }

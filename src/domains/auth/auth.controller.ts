@@ -31,15 +31,11 @@ export class AuthController {
   @Get('steam/return')
   @UseGuards(AuthGuard('steam'))
   async steamAuthRedirect(@Req() req, @Res() res) {
-    console.log('Steam auth callback initiated');
     const user = req.user;
     const accessToken = this.authService.generateAccessToken(user);
     const refreshToken = this.authService.generateRefreshToken(user);
+    const url = `http://localhost:3001/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
 
-    console.log('Steam auth callback finished, redirect');
-
-    return res.redirect(
-      `http://localhost:3001/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`,
-    );
+    return res.status(302).json({ url });
   }
 }

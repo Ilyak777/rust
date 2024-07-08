@@ -68,7 +68,7 @@ export class UserRepository {
         'activeSubscriptions',
         'purchasedItems',
         'orderHistory',
-        'integrations',
+        'integration',
       ],
     });
   }

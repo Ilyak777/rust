@@ -34,7 +34,7 @@ import { GameStats } from '../statistics/entities/game-statistics.entity';
   providers: [
     AuthService,
     SteamStrategy,
-    // JwtStrategy,
+    JwtStrategy,
     ConfigService,
     UserService,
     UserRepository,

@@ -5,7 +5,6 @@ import {
   Param,
   Body,
   Patch,
-  Inject,
   UseInterceptors,
   CacheTTL,
   UseGuards,
@@ -15,7 +14,7 @@ import { ShopService } from './shop.service';
 import { ShopItem } from './entities/shop-item.entity';
 import { User } from '../user/entities/user.entity';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
-import { DynamicCacheKeyInterceptor } from '../interceptors/dynamic-cache.interceptor';
+import { DynamicCacheKeyInterceptor } from '../../common/interceptors/dynamic-cache.interceptor';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/guards/role.guard';
 import { UserRoleE } from '../user/enums/user-role.enum';

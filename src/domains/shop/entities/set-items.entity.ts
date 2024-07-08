@@ -1,12 +1,5 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ShopItemSubtypeE } from '../enums/shop-item-subtype.enum';
-import { ShopItem } from './shop-item.entity';
 
 @Entity()
 export class SetItems {

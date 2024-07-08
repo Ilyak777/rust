@@ -40,7 +40,7 @@ export class CommandsService {
     return this.commandsRepository.delete({ id });
   }
 
-  async saveCommand(userId: number, steamId: string): Promise<void> {
+  async saveCommand(userId: number): Promise<void> {
     const user = await this.userService.findById(userId);
     if (!user || !user.steamId) {
       throw new Error('User not found or no Steam ID');

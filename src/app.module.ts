@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { HealthModule } from './domains/health/health.module';
 import appConfig, { RedisOptions } from './app/app.config';
 import { DatabaseModule } from './app/database/db.module';

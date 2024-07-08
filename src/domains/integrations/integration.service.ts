@@ -2,21 +2,18 @@ import { Injectable, BadRequestException, CacheStore } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { OnewinDto } from './dto/onewin.dto';
 import { IntegrationRepository } from './integration.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CommandsService } from '../commands/commands.service';
 import { ServersService } from '../servers/services/servers.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class IntegrationService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
     private readonly repo: IntegrationRepository,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userService: UserService,
     private commandService: CommandsService,
     private serverService: ServersService,
   ) {}
@@ -39,7 +36,7 @@ export class IntegrationService {
     if (oneExists) {
       throw new BadRequestException('onewin-already-exists');
     }
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userService.findById(userId);
     const servers = await this.serverService.findAllServers();
     await servers.map((el) => {
       this.commandService.grantSkinbox(userId, user.steamId, el.id);

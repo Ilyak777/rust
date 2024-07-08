@@ -3,27 +3,15 @@ import {
   Controller,
   Get,
   Query,
-  Redirect,
-  Req,
   Res,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { STEAM_AUTH_URL } from './constants';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
-  @ApiOperation({ summary: 'Initiate Steam authentication' })
-  @ApiResponse({
-    status: 200,
-    description: 'Successfully initiated Steam authentication.',
-  })
-  @Get('steam')
-  @Redirect(STEAM_AUTH_URL, 302)
-  async steamAuth(@Req() req) {}
 
   @ApiOperation({ summary: 'Handle Steam authentication return' })
   @ApiResponse({

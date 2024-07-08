@@ -1,6 +1,5 @@
-import { ExecutionContext, Injectable, CallHandler } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { CacheInterceptor } from '@nestjs/cache-manager';
-import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()

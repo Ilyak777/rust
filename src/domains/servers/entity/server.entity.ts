@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ServerWipe } from './server-wipe.entity';
 import { ShopItem } from '../../shop/entities/shop-item.entity';
 import { Subscription } from '../../subscriptions/entities/subscription.entity';

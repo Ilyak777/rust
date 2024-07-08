@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Patch,
-  Body,
-  Param,
-  UseGuards,
-  Get,
-  Req,
-} from '@nestjs/common';
+import { Controller, Patch, Body, UseGuards, Get, Req } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { ProfileData } from './entities/profile.entity';
 import { ProfileSocials } from './entities/profile-socials.entity';

@@ -15,14 +15,14 @@ import { CreateItemDTO } from './dto/create-item.input.dto';
 import { ServersService } from '../servers/services/servers.service';
 import { ShopItemTypeE } from './enums/shop-item.enum';
 import { SetItems } from './entities/set-items.entity';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ShopService {
   constructor(
     @InjectRepository(ShopItem)
     private shopItemRepository: Repository<ShopItem>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userService: UserService,
     @Inject(Cache) private cacheManager: Cache,
     private readonly dataSource: DataSource,
     private readonly serversService: ServersService,
@@ -99,14 +99,15 @@ export class ShopService {
     });
   }
 
-  async addBalance(userId: number, amount: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+  async addBalance(userId: number, amount: number): Promise<any> {
+    const user = await this.userService.findById(userId);
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
     user.balance += amount;
-    return this.userRepository.save(user);
+    return this.userService.updateUser(user.id, user);
   }
 
   async createItems(
@@ -133,7 +134,7 @@ export class ShopService {
     shopItem.servers = server;
 
     if (type === ShopItemTypeE.SET) {
-      let sets: SetItems[] = [];
+      const sets: SetItems[] = [];
       for (let i = 0; i < setItems.length; i++) {
         const setItem = new SetItems();
         setItem.category = setItems[i].category;

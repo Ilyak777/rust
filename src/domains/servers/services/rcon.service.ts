@@ -10,7 +10,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Server } from '../entity/server.entity';
 import { CommandsService } from '../../commands/commands.service';
-import axios from 'axios';
 import { ServersService } from './servers.service';
 
 @Injectable()
@@ -50,7 +49,8 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
 
     await Promise.all(
       servers.map(async (server) => {
-        let { address, pass } = server;
+        let { address } = server;
+        const { pass } = server;
 
         address = address.replace(/"/g, '');
 

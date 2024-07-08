@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
-import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { parseStringPromise } from 'xml2js';
 import { returnTo } from './constants';
@@ -12,7 +11,6 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private userService: UserService,
-    private configService: ConfigService,
   ) {}
 
   async validateSteamResponse(query: any): Promise<any> {

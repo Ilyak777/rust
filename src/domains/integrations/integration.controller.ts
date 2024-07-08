@@ -3,7 +3,6 @@ import {
   Get,
   HttpCode,
   Query,
-  Redirect,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,7 +16,6 @@ export class IntegrationController {
 
   @Get('login')
   @UseGuards(JwtAuthGuard)
-  // @Redirect('https://1w.rustresort.com')
   async onewinLogin(@Req() req: Request) {
     return this.service.onewinLogin(Number(req['user'].userId));
   }

@@ -1,7 +1,5 @@
 import {
   IsArray,
-  IsDate,
-  IsEmail,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -9,7 +7,6 @@ import {
 } from 'class-validator';
 import { ShopItemTypeE } from '../enums/shop-item.enum';
 import { ShopItemSubtypeE } from '../enums/shop-item-subtype.enum';
-import { SetItems } from '../entities/set-items.entity';
 import { SetItemsDTO } from './set-items.dto';
 
 export class CreateItemDTO {

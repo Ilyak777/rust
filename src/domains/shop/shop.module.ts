@@ -3,30 +3,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ShopService } from './shop.service';
 import { ShopController } from './shop.controller';
 import { ShopItem } from './entities/shop-item.entity';
-import { User } from '../user/entities/user.entity';
-import { UserPurchasedItems } from '../user/entities/user-purchased-items.entity';
-import { OrderHistory } from '../user/entities/user-order-history.entity';
 import { SetItems } from './entities/set-items.entity';
-import { ServersService } from '../servers/services/servers.service';
 import { Server } from '../servers/entity/server.entity';
 import { ServerWipe } from '../servers/entity/server-wipe.entity';
-import { CommandsService } from '../commands/commands.service';
 import { Commands } from '../commands/entity/commands.entity';
-import { UserService } from '../user/user.service';
-import { UserRepository } from '../user/repositories/user.repository';
-import { UserPurchasedItemsRepository } from '../user/repositories/user-purchased-items.repository';
-import { StatisticsService } from '../statistics/statistics.service';
 import { SteamStats } from '../statistics/entities/steam-statistics.entity';
 import { GameStats } from '../statistics/entities/game-statistics.entity';
 import { ServersModule } from '../servers/servers.module';
+import { UserModule } from '../user/user.module';
+import { StatisticsModule } from '../statistics/statistics.module';
+import { CommandsModule } from '../commands/commands.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       ShopItem,
-      User,
-      UserPurchasedItems,
-      OrderHistory,
       SetItems,
       Server,
       ServerWipe,
@@ -35,15 +26,11 @@ import { ServersModule } from '../servers/servers.module';
       GameStats,
       ServersModule,
     ]),
+    UserModule,
+    StatisticsModule,
+    CommandsModule,
   ],
-  providers: [
-    ShopService,
-    CommandsService,
-    UserService,
-    UserRepository,
-    UserPurchasedItemsRepository,
-    StatisticsService,
-  ],
+  providers: [ShopService],
   controllers: [ShopController],
 })
 export class ShopModule {}

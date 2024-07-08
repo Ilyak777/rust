@@ -15,8 +15,6 @@ import { ProfileData } from '../profile/entities/profile.entity';
 import { StatisticsModule } from '../statistics/statistics.module';
 import { GameStats } from '../statistics/entities/game-statistics.entity';
 import { SteamStats } from '../statistics/entities/steam-statistics.entity';
-import { StatisticsService } from '../statistics/statistics.service';
-import { IntegrationModule } from '../integrations/integration.module';
 
 @Module({
   imports: [
@@ -31,7 +29,6 @@ import { IntegrationModule } from '../integrations/integration.module';
       ProfileSocials,
       GameStats,
       SteamStats,
-      StatisticsModule,
     ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -42,15 +39,10 @@ import { IntegrationModule } from '../integrations/integration.module';
       inject: [ConfigService],
     }),
     JwtModule,
+    StatisticsModule,
   ],
   controllers: [UserController],
-  providers: [
-    UserService,
-    UserRepository,
-    UserPurchasedItemsRepository,
-    StatisticsModule,
-    StatisticsService,
-  ],
-  exports: [UserService, UserRepository, UserPurchasedItemsRepository],
+  providers: [UserService, UserRepository, UserPurchasedItemsRepository],
+  exports: [UserService, UserPurchasedItemsRepository],
 })
 export class UserModule {}

@@ -2,11 +2,8 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToOne,
   CreateDateColumn,
 } from 'typeorm';
-import { Integration } from './integration.entity';
 
 @Entity()
 export class OneWinIntegration {

@@ -25,6 +25,10 @@ export class UserService {
     return this.repo.create(user);
   }
 
+  async updateUser(id: number, user: User) {
+    return this.repo.update(id, user);
+  }
+
   async findById(userId: number) {
     return this.repo.findById(userId);
   }

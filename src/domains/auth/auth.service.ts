@@ -5,6 +5,7 @@ import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { parseString } from 'xml2js';
+import { realm, returnTo } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -62,6 +63,8 @@ export class AuthService {
     if (existingUser) {
       existingUser.username = user.username;
       existingUser.avatar = user.avatar;
+
+      await this.userService.updateUser(existingUser.id, existingUser);
     } else {
       existingUser = this.userService.createUser(user)[0];
     }

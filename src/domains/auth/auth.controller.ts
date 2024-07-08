@@ -1,4 +1,4 @@
-import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -34,15 +34,8 @@ export class AuthController {
     const user = req.user;
     const accessToken = this.authService.generateAccessToken(user);
     const refreshToken = this.authService.generateRefreshToken(user);
-    const url = `http://localhost:3001/auth/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
+    const url = `http://localhost:3001/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
 
     return res.setHeader('Location', url).status(302).end();
-  }
-
-  @Redirect('http://localhost:3001', 302)
-  @Get('finish-auth')
-  async finishAuthRedirect(@Req() req, @Res() res) {
-    const url = `${req.protocol}://${req.get('Host')}${req.originalUrl}`;
-    return { url };
   }
 }

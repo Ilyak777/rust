@@ -48,16 +48,16 @@ export class AuthService {
       method: 'GET',
     });
 
-    const result: object = await new Promise((resolve, reject) => {
-      parseString(profileData, (err, parsedResult) => {
-        if (err) return reject(err);
-        resolve(parsedResult);
-      });
-    });
+    // const result: object = await new Promise((resolve, reject) => {
+    //   parseString(profileData, (err, parsedResult) => {
+    //     if (err) return reject(err);
+    //     resolve(parsedResult);
+    //   });
+    // });
 
-    console.log(result);
+    console.log(profileData);
 
-    return result;
+    return profileData;
   }
 
   generateAccessToken(user: any) {

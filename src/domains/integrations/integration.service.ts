@@ -35,7 +35,6 @@ export class IntegrationService {
     const userId = await this.cacheManager.get<number>(`onewin-${payload.ok}`);
     this.cacheManager.del(`onewin-${payload.ok}`);
     const oneExists = await this.repo.getOneWinIntegration(payload.oci);
-    console.info('checked user');
 
     if (oneExists) {
       throw new BadRequestException('onewin-already-exists');

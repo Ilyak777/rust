@@ -28,6 +28,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     private wipesRepository: Repository<ServerWipe>,
     @Inject(Cache) private cacheManager: Cache,
     private commandService: CommandsService,
+    private playerlistInterval: NodeJS.Timeout,
   ) {}
 
   async onModuleInit() {
@@ -38,6 +39,10 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
   onModuleDestroy() {
     if (this.rcon) {
       this.rcon.disconnect();
+    }
+
+    if (this.playerlistInterval) {
+      clearInterval(this.playerlistInterval);
     }
   }
 
@@ -121,7 +126,9 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
           rcon.send('server.levelurl', 'M3RCURRRY', 222);
 
-          rcon.send('playerlist', 'M3RCURRRY', 444);
+          this.playerlistInterval = setInterval(() => {
+            this.rcon.send('playerlist', 'M3RCURRRY', 444);
+          }, 90 * 1000);
         });
 
         rcon.on('error', (err) => {
@@ -144,7 +151,18 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
               console.log(error);
             }
           }
-          if (message.Identifier === 444) {
+          if (message.Identifier === 333) {
+            const cacheKey = `server-info-${rcon_host}:${port}`;
+
+            const cachedResult = await this.cacheManager.get(cacheKey);
+            if (cachedResult) {
+              await this.cacheManager.del(cacheKey);
+            }
+            const serverOnline = {
+              serverOnline: message.content.Players,
+              maxServerOnline: message.content.maxPlayers,
+            };
+            await this.cacheManager.set(cacheKey, serverOnline, 10000);
           }
         });
       }),
@@ -186,12 +204,8 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
         let serverOnline = await this.cacheManager.get(cacheKey);
 
-        if (!serverOnline) {
-          serverOnline = await this.getServerInfoByAddressAndPort(host, port);
-          await this.cacheManager.set(cacheKey, serverOnline, 100000);
-        } else {
-          console.log(`Cache hit for server ${host}:${port}`);
-        }
+        console.log(`Cache hit for server ${host}:${port}`);
+
         return Object.assign(server, serverOnline);
       }),
     );
@@ -214,26 +228,6 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         console.log(`Deleted cache for ${cacheKey}`);
       }),
     );
-  }
-
-  async getServerInfoByAddressAndPort(
-    address: string,
-    port: number,
-  ): Promise<any> {
-    try {
-      const allInfo = await GameDig.query({
-        type: 'rust',
-        host: address,
-        port: port,
-      });
-      return {
-        serverOnline: allInfo.numplayers,
-        maxServerOnline: allInfo.maxplayers,
-      };
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
   }
 
   async addWipe(

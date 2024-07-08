@@ -12,6 +12,17 @@ export class CommandsService {
     private userService: UserService,
   ) {}
 
+  async findByServerId(serverId: number) {
+    return await this.commandsRepository.find({
+      where: { server: { id: serverId } },
+      relations: ['user', 'server'],
+    });
+  }
+
+  async deleteCommand(command: Commands) {
+    return await this.commandsRepository.delete(command);
+  }
+
   async getCommandForUserOnServer(
     userId: number,
     serverId: number,

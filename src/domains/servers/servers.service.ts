@@ -12,16 +12,11 @@ import { Cache } from '@nestjs/cache-manager';
 import { Client } from 'rustrcon';
 import axios from 'axios';
 import { CommandsService } from '../commands/commands.service';
-import { Commands } from '../commands/entity/commands.entity';
-
-declare function require(moduleName: string): any;
-const { GameDig } = require('gamedig');
 
 @Injectable()
 export class ServersService implements OnModuleInit, OnModuleDestroy {
   private rconClients: Map<number, Client> = new Map();
-  private rcon: Client;
-  private playerlistInterval: NodeJS.Timeout;
+  private serverUserSets: Map<number, Set<string>> = new Map();
 
   constructor(
     @InjectRepository(Server)
@@ -41,59 +36,34 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     this.rconClients.forEach((rcon) => {
       rcon.disconnect();
     });
-
-    if (this.playerlistInterval) {
-      clearInterval(this.playerlistInterval);
-    }
   }
 
   async handleRconMessage(message: any, serverId: number): Promise<void> {
-    if (
-      !message.content ||
-      typeof message.content !== 'string' ||
-      message.content.includes('disconnecting')
-    ) {
-      return;
-    }
+    if (!message.content || typeof message.content !== 'string') return;
+
+    const userSet = this.serverUserSets.get(serverId);
+    if (!userSet) return;
 
     if (
       message.content.includes('joined') ||
       message.content.includes('joined from ip')
     ) {
-      const steamIdMatch = message.content.match(/(\d{17})/);
-      if (!steamIdMatch) {
-        return;
-      }
+      const match = message.content.match(/(\d{17})/);
+      if (!match) return;
 
-      const steamId = steamIdMatch[0];
-      await this.processUserCommands(steamId, serverId);
-    }
-    return;
-  }
-
-  async processUserCommands(steamId: string, serverId: number): Promise<void> {
-    const user = await this.commandService.getUserForCommand(steamId);
-    if (!user || !user.integration.onewin) {
-      return;
+      const steamId = match[0];
+      userSet.add(steamId);
+      console.log(`User ${steamId} connected to server ${serverId}`);
     }
 
-    const commands = await this.commandService.getCommandForUserOnServer(
-      user.id,
-      serverId,
-    );
+    if (message.content.includes('disconnecting')) {
+      const match = message.content.match(/\/(\d{17})\//);
+      if (!match) return;
 
-    if (!commands) {
-      return;
+      const steamId = match[1];
+      userSet.delete(steamId);
+      console.log(`User ${steamId} disconnected from server ${serverId}`);
     }
-
-    for (const command of commands) {
-      await this.executeCommand(command);
-      await this.commandService.removeCommandForUserOnServer(command);
-    }
-  }
-
-  async executeCommand(command: Commands): Promise<void> {
-    this.rcon.send(command, 'M3RCURRRY', 3);
   }
 
   private async startChecking() {
@@ -117,6 +87,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         try {
           await rcon.login();
           this.rconClients.set(server.id, rcon);
+          this.serverUserSets.set(server.id, new Set<string>());
         } catch (error) {
           console.log(error);
         }
@@ -162,6 +133,10 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
               maxServerOnline: message.content.MaxPlayers,
             };
             await this.cacheManager.set(cacheKey, serverOnline, 10000);
+          }
+
+          if (message.Identifier === 444) {
+            this.updateUserSet(server.id, message.content);
           }
         });
       }),
@@ -238,6 +213,34 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         console.log(`Deleted cache for ${cacheKey}`);
       }),
     );
+  }
+
+  updateUserSet(serverId: number, content: any): void {
+    const userSet = this.serverUserSets.get(serverId);
+    if (!userSet) return;
+
+    content.forEach((user: any) => {
+      userSet.add(user.SteamID);
+    });
+
+    this.checkAndExecuteCommands(serverId);
+  }
+
+  async checkAndExecuteCommands(serverId: number): Promise<void> {
+    const userSet = this.serverUserSets.get(serverId);
+    if (!userSet) return;
+
+    const commands = await this.commandService.findByServerId(serverId);
+    if (!commands) return;
+    commands.forEach(async (command) => {
+      if (userSet.has(command.user.steamId)) {
+        const rcon = this.rconClients.get(serverId);
+        if (rcon) {
+          rcon.send(command.command, 'M3RCURRRY', 3);
+          await this.commandService.deleteCommand(command);
+        }
+      }
+    });
   }
 
   async addWipe(

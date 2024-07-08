@@ -20,6 +20,7 @@ const { GameDig } = require('gamedig');
 @Injectable()
 export class ServersService implements OnModuleInit, OnModuleDestroy {
   private rcon: Client;
+  private playerlistInterval: NodeJS.Timeout;
 
   constructor(
     @InjectRepository(Server)
@@ -28,7 +29,6 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     private wipesRepository: Repository<ServerWipe>,
     @Inject(Cache) private cacheManager: Cache,
     private commandService: CommandsService,
-    private playerlistInterval: NodeJS.Timeout,
   ) {}
 
   async onModuleInit() {

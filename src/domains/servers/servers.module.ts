@@ -17,6 +17,7 @@ import { User } from '../user/entities/user.entity';
 import { UserPurchasedItems } from '../user/entities/user-purchased-items.entity';
 import { SteamStats } from '../statistics/entities/steam-statistics.entity';
 import { GameStats } from '../statistics/entities/game-statistics.entity';
+import { Timeout } from '@nestjs/schedule';
 
 @Global()
 @Module({

@@ -62,7 +62,7 @@ export class AuthController {
       const refreshToken = this.authService.generateRefreshToken(savedUser);
 
       return res.redirect(
-        `/?access_token=${accessToken}&refresh_token=${refreshToken}`,
+        `https://1w.rustresort.com/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`,
       );
     } catch (error) {
       return res.redirect('/login?error=steam_auth_failed');

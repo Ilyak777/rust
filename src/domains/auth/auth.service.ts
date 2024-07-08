@@ -28,8 +28,7 @@ export class AuthService {
     });
 
     const response = await axios.post(
-      'https://steamcommunity.com/openid/login',
-      params,
+      `https://steamcommunity.com/openid/login?` + params.toString(),
     );
 
     const result = await new Promise((resolve, reject) => {

@@ -33,9 +33,14 @@ export class AuthController {
   @Get('steam/return')
   async steamAuthReturn(@Query() query: any, @Res() res) {
     try {
+      console.log(query);
       const validationResponse = await this.authService.validateSteamResponse(
         query,
       );
+
+      console.log(validationResponse);
+      console.log((validationResponse as string).includes('is_valid'));
+      console.log((validationResponse as string).includes('is_valid:true'));
       const isValid = validationResponse?.['openid']['is_valid'][0] === 'true';
 
       if (!isValid) {

@@ -16,15 +16,17 @@ export class AuthService {
 
   async validateSteamResponse(query: any): Promise<any> {
     const params = new URLSearchParams({
+      'openid.ns': 'http://specs.openid.net/auth/2.0',
+      'openid.mode': 'check_authentication',
+      'openid.op_endpoint': 'https://steamcommunity.com/openid/login',
+      'openid.claimed_id': query['openid.claimed_id'],
+      'openid.identity': query['openid.identity'],
+      'openid.return_to': this.configService.get('RETURN_TO'),
+      'openid.response_nonce': query['openid.response_nonce'],
       'openid.assoc_handle': query['openid.assoc_handle'],
       'openid.signed': query['openid.signed'],
       'openid.sig': query['openid.sig'],
-      'openid.ns': 'http://specs.openid.net/auth/2.0',
-      'openid.mode': 'check_authentication',
       'openid.realm': this.configService.get('REALM'),
-      'openid.return_to': this.configService.get('RETURN_TO'),
-      'openid.identity': query['openid.identity'],
-      'openid.claimed_id': query['openid.claimed_id'],
     });
 
     const response = await axios.post(

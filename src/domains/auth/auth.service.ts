@@ -5,6 +5,7 @@ import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { parseString } from 'xml2js';
+import { returnTo } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +20,10 @@ export class AuthService {
       'openid.ns': 'http://specs.openid.net/auth/2.0',
       'openid.mode': 'check_authentication',
       'openid.op_endpoint': 'https://steamcommunity.com/openid/login',
-      'openid.claimed_id': query['openid.claimed_id'],
-      'openid.return_to': this.configService.get('RETURN_TO'),
-      'openid.response_nonce': query['openid.response_nonce'],
       'openid.identity': query['openid.identity'],
+      'openid.claimed_id': query['openid.claimed_id'],
+      'openid.return_to': returnTo,
+      'openid.response_nonce': query['openid.response_nonce'],
       'openid.assoc_handle': query['openid.assoc_handle'],
       'openid.signed': query['openid.signed'],
       'openid.sig': query['openid.sig'],

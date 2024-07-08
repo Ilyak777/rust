@@ -4,7 +4,7 @@ import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { parseString } from 'xml2js';
+import { parseString, parseStringPromise } from 'xml2js';
 import { returnTo } from './constants';
 
 @Injectable()
@@ -27,14 +27,11 @@ export class AuthService {
       'openid.assoc_handle': query['openid.assoc_handle'],
       'openid.signed': query['openid.signed'],
       'openid.sig': query['openid.sig'],
-      // 'openid.realm': this.configService.get('REALM'),
     });
 
     const response = await axios.post(
       `https://steamcommunity.com/openid/login?` + params.toString(),
     );
-
-    console.log(response.data);
 
     if (!response.data.includes('is_valid:true')) {
       return false;
@@ -48,16 +45,13 @@ export class AuthService {
       method: 'GET',
     });
 
-    // const result: object = await new Promise((resolve, reject) => {
-    //   parseString(profileData, (err, parsedResult) => {
-    //     if (err) return reject(err);
-    //     resolve(parsedResult);
-    //   });
-    // });
+    const parsedProfile = await parseStringPromise(profileData);
 
-    console.log(profileData);
-
-    return profileData;
+    return {
+      steamId: parsedProfile.steamID64[0],
+      avatar: parsedProfile.avatarFull ? parsedProfile.avatarFull[0] : '',
+      username: parsedProfile.steamID[0]
+    };
   }
 
   generateAccessToken(user: any) {

@@ -12,7 +12,7 @@ export class SteamStrategy extends PassportStrategy(Strategy, 'steam') {
   ) {
     super({
       returnURL: `https://api-1w.rustresort.com/auth/steam/return`,
-      realm: `https://api-1w.rustresort.com/`,
+      realm: `https://1w.rustresort.com/`,
       apiKey: configService.get('STEAM_API_KEY'),
     });
   }

@@ -1,4 +1,13 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Query,
+  Redirect,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -7,6 +16,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { STEAM_AUTH_URL } from './constants';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -19,23 +29,43 @@ export class AuthController {
     description: 'Successfully initiated Steam authentication.',
   })
   @Get('steam')
-  @UseGuards(AuthGuard('steam'))
+  @Redirect(STEAM_AUTH_URL, 302)
   async steamAuth(@Req() req) {}
 
   @ApiOperation({ summary: 'Handle Steam authentication return' })
   @ApiResponse({
-    status: 302,
-    description: 'Redirect to the frontend with access and refresh tokens.',
+    status: 200,
+    description: 'Successfully authenticated with Steam.',
   })
-  @ApiBearerAuth()
   @Get('steam/return')
-  @UseGuards(AuthGuard('steam'))
-  async steamAuthRedirect(@Req() req, @Res() res) {
-    const user = req.user;
-    const accessToken = this.authService.generateAccessToken(user);
-    const refreshToken = this.authService.generateRefreshToken(user);
-    const url = `https://1w.rustresort.com/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
+  async steamAuthReturn(@Query() query: any, @Res() res) {
+    try {
+      const validationResponse = await this.authService.validateSteamResponse(
+        query,
+      );
+      const isValid = validationResponse?.['openid']['is_valid'][0] === 'true';
 
-    return res.setHeader('Location', url).status(302).end();
+      if (!isValid) {
+        throw new BadRequestException('Invalid Steam login.');
+      }
+
+      const steamId = query['openid.identity'].split('/').pop();
+      const user = {
+        username: steamId,
+        steamId: steamId,
+      };
+
+      const savedUser = await this.authService.validateAndSaveUser(user);
+      await this.authService.updateUserStats(user);
+
+      const accessToken = this.authService.generateAccessToken(savedUser);
+      const refreshToken = this.authService.generateRefreshToken(savedUser);
+
+      return res.redirect(
+        `/?access_token=${accessToken}&refresh_token=${refreshToken}`,
+      );
+    } catch (error) {
+      return res.redirect('/login?error=steam_auth_failed');
+    }
   }
 }

@@ -2,13 +2,45 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import { parseString } from 'xml2js';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private userService: UserService,
+    private configService: ConfigService,
   ) {}
+
+  async validateSteamResponse(query: any): Promise<any> {
+    const params = new URLSearchParams({
+      'openid.assoc_handle': query['openid.assoc_handle'],
+      'openid.signed': query['openid.signed'],
+      'openid.sig': query['openid.sig'],
+      'openid.ns': 'http://specs.openid.net/auth/2.0',
+      'openid.mode': 'check_authentication',
+      'openid.realm': this.configService.get('REALM'),
+      'openid.return_to': this.configService.get('RETURN_TO'),
+      'openid.identity': query['openid.identity'],
+      'openid.claimed_id': query['openid.claimed_id'],
+    });
+
+    const response = await axios.post(
+      'https://steamcommunity.com/openid/login',
+      params,
+    );
+
+    const result = await new Promise((resolve, reject) => {
+      parseString(response.data, (err, parsedResult) => {
+        if (err) return reject(err);
+        resolve(parsedResult);
+      });
+    });
+
+    return result;
+  }
 
   generateAccessToken(user: any) {
     const payload = { username: user.username, sub: user.id, role: user.role };

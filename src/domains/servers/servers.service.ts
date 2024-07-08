@@ -128,8 +128,6 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         });
 
         rcon.on('message', async (message) => {
-          console.log(message);
-
           await this.handleRconMessage(message);
 
           if (message.Identifier === 222) {
@@ -142,7 +140,6 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
             }
           }
           if (message.Identifier === 444) {
-            console.log('------->', message.content[0], server);
           }
         });
       }),

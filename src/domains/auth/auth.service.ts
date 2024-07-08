@@ -45,7 +45,7 @@ export class AuthService {
       method: 'GET',
     });
 
-    const parsedProfile = await parseStringPromise(profileData);
+    const parsedProfile = await parseStringPromise(profileData.data);
 
     return {
       steamId: parsedProfile.steamID64[0],

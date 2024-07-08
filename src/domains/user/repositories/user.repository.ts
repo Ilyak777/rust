@@ -58,19 +58,23 @@ export class UserRepository {
   }
 
   public async findBySteamId(steamId: string): Promise<User> {
-    return await this.repository.findOne({
-      where: { steamId },
-      relations: [
-        'profileData',
-        'profileData.socials',
-        'steamStats',
-        'gameStats',
-        'activeSubscriptions',
-        'purchasedItems',
-        'orderHistory',
-        'integrations',
-      ],
-    });
+    try {
+      return await this.repository.findOne({
+        where: { steamId },
+        relations: [
+          'profileData',
+          'profileData.socials',
+          'steamStats',
+          'gameStats',
+          'activeSubscriptions',
+          'purchasedItems',
+          'orderHistory',
+          'integration',
+        ],
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   public async findBySteamIdOrErr(steamId: string): Promise<User> {

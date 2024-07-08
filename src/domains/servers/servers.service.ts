@@ -11,6 +11,8 @@ import { ServerWipe } from './entity/server-wipe.entity';
 import { Cache } from '@nestjs/cache-manager';
 import { Client } from 'rustrcon';
 import axios from 'axios';
+import { CommandsService } from '../commands/commands.service';
+import { Commands } from '../commands/entity/commands.entity';
 
 declare function require(moduleName: string): any;
 const { GameDig } = require('gamedig');
@@ -25,6 +27,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     @InjectRepository(ServerWipe)
     private wipesRepository: Repository<ServerWipe>,
     @Inject(Cache) private cacheManager: Cache,
+    private commandService: CommandsService,
   ) {}
 
   async onModuleInit() {
@@ -38,8 +41,53 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  async handleRconMessage(message: any): Promise<void> {
+    if (
+      !message.content ||
+      typeof message.content !== 'string' ||
+      message.content.includes('disconnecting')
+    ) {
+      return;
+    }
+
+    if (
+      message.content.includes('joined') ||
+      message.content.includes('joined from ip')
+    ) {
+      const steamIdMatch = message.content.match(/(\d{17})/);
+      if (!steamIdMatch) {
+        return;
+      }
+
+      const steamId = steamIdMatch[0];
+      await this.processUserCommands(steamId);
+    }
+    return;
+  }
+
+  async processUserCommands(steamId: string): Promise<void> {
+    const user = await this.commandService.getUserForCommand(steamId);
+    if (!user || !user.integration.onewin) {
+      return;
+    }
+
+    const commands = await this.commandService.getCommandForUserOnServer(
+      user.id,
+    );
+
+    for (const command of commands) {
+      await this.executeCommand(command);
+      await this.commandService.removeCommandForUserOnServer(command);
+    }
+  }
+
+  async executeCommand(command: Commands): Promise<void> {
+    this.rcon.send(command, 'M3RCURRRY', 3);
+  }
+
   private async startChecking() {
     const servers = await this.serversRepository.find();
+
     await Promise.all(
       servers.map(async (server) => {
         let { address, pass } = server;
@@ -76,21 +124,25 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         });
 
         rcon.on('disconnect', () => {
-          // console.log('Disconnected from RCON websocket');
+          console.log('Disconnected from RCON websocket');
         });
 
-        rcon.on('message', (message) => {
-          // console.log(message);
+        rcon.on('message', async (message) => {
+          console.log(message);
+
+          await this.handleRconMessage(message);
 
           if (message.Identifier === 222) {
             try {
-              this.getAndSetMap(rcon_host + ':' + rcon_port, message.content);
-              console.log('Server info:', message);
+              if (!server.rustMapsId) {
+                this.getAndSetMap(rcon_host + ':' + rcon_port, message.content);
+              }
             } catch (error) {
               console.log(error);
             }
           }
           if (message.Identifier === 444) {
+            console.log('------->', message.content[0], server);
           }
         });
       }),

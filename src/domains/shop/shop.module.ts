@@ -10,6 +10,14 @@ import { SetItems } from './entities/set-items.entity';
 import { ServersService } from '../servers/servers.service';
 import { Server } from '../servers/entity/server.entity';
 import { ServerWipe } from '../servers/entity/server-wipe.entity';
+import { CommandsService } from '../commands/commands.service';
+import { Commands } from '../commands/entity/commands.entity';
+import { UserService } from '../user/user.service';
+import { UserRepository } from '../user/repositories/user.repository';
+import { UserPurchasedItemsRepository } from '../user/repositories/user-purchased-items.repository';
+import { StatisticsService } from '../statistics/statistics.service';
+import { SteamStats } from '../statistics/entities/steam-statistics.entity';
+import { GameStats } from '../statistics/entities/game-statistics.entity';
 
 @Module({
   imports: [
@@ -21,9 +29,20 @@ import { ServerWipe } from '../servers/entity/server-wipe.entity';
       SetItems,
       Server,
       ServerWipe,
+      Commands,
+      SteamStats,
+      GameStats,
     ]),
   ],
-  providers: [ShopService, ServersService],
+  providers: [
+    ShopService,
+    ServersService,
+    CommandsService,
+    UserService,
+    UserRepository,
+    UserPurchasedItemsRepository,
+    StatisticsService,
+  ],
   controllers: [ShopController],
 })
 export class ShopModule {}

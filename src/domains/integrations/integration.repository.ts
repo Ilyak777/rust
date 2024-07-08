@@ -24,10 +24,6 @@ export class IntegrationRepository {
     clientId: string,
     clientEmail: string,
   ): Promise<OneWinIntegration> {
-    // let userIntegrations = await this.userIntegration.findOne({
-    //   where: { user: { id: userId } },
-    // });
-
     let userIntegrations = await this.userService.findUserIntegration(userId);
 
     if (!userIntegrations) {

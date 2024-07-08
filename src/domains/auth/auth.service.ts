@@ -39,18 +39,20 @@ export class AuthService {
 
     const steamid64 = query['openid.claimed_id'].split('/').at(-1);
 
-    const profileData = (await axios.request({
-      baseURL: 'https://steamcommunity.com/profiles/',
-      url: `${steamid64}?xml=1`,
-      method: 'GET',
-    })).data.profile;
+    const profileData = (
+      await axios.request({
+        baseURL: 'https://steamcommunity.com/profiles/',
+        url: `${steamid64}?xml=1`,
+        method: 'GET',
+      })
+    ).data;
 
-    const parsedProfile = await parseStringPromise(profileData);
+    const parsedProfile = (await parseStringPromise(profileData)).profile;
 
     return {
       steamId: parsedProfile.steamID64[0],
       avatar: parsedProfile.avatarFull ? parsedProfile.avatarFull[0] : '',
-      username: parsedProfile.steamID[0]
+      username: parsedProfile.steamID[0],
     };
   }
 

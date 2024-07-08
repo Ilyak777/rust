@@ -19,4 +19,8 @@ export class Commands {
   @ManyToOne(() => User, (user) => user.commands)
   @JoinColumn({ name: 'userId' })
   user: User;
+
+  @ManyToOne(() => Server, (user) => user.command)
+  @JoinColumn({ name: 'serverId' })
+  server: Server;
 }

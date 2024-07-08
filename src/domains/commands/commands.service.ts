@@ -12,10 +12,14 @@ export class CommandsService {
     private userService: UserService,
   ) {}
 
-  async getCommandForUserOnServer(userId: number): Promise<Commands[]> {
+  async getCommandForUserOnServer(
+    userId: number,
+    serverId: number,
+  ): Promise<Commands[]> {
     return this.commandsRepository.find({
       where: {
         user: { id: userId },
+        server: { id: serverId },
       },
     });
   }
@@ -49,7 +53,11 @@ export class CommandsService {
     }
   }
 
-  async grantSkinbox(userId: number, steamId: string): Promise<void> {
+  async grantSkinbox(
+    userId: number,
+    steamId: string,
+    serverId: number,
+  ): Promise<void> {
     const userToGrant = await this.userService.findById(userId);
     if (!userToGrant || !userToGrant.steamId) {
       throw new Error('User not found or no Steam ID');
@@ -59,6 +67,7 @@ export class CommandsService {
     const newCommand = this.commandsRepository.create({
       command: command,
       user: { id: userId },
+      server: { id: serverId },
     });
 
     await this.commandsRepository.save(newCommand);

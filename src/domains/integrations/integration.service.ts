@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CommandsService } from '../commands/commands.service';
+import { ServersService } from '../servers/servers.service';
 
 @Injectable()
 export class IntegrationService {
@@ -17,6 +18,7 @@ export class IntegrationService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private commandService: CommandsService,
+    private serverService: ServersService,
   ) {}
 
   async onewinLogin(userId: number): Promise<string> {
@@ -39,7 +41,11 @@ export class IntegrationService {
       throw new BadRequestException('onewin-already-exists');
     }
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    await this.commandService.grantSkinbox(userId, user.steamId);
+    const servers = await this.serverService.findAllServers();
+    await servers.map((el) => {
+      this.commandService.grantSkinbox(userId, user.steamId, el.id);
+    });
+
     return await this.checkOneWinIntegration(userId, payload.oci, payload.oce);
   }
 

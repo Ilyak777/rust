@@ -38,4 +38,7 @@ export class Server {
 
   @OneToMany(() => Subscription, (item) => item.servers)
   subscriptions: ShopItem;
+
+  @OneToMany(() => Commands, (item) => item.server)
+  command: Commands;
 }

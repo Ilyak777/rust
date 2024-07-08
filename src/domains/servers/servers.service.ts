@@ -41,7 +41,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async handleRconMessage(message: any): Promise<void> {
+  async handleRconMessage(message: any, serverId: number): Promise<void> {
     if (
       !message.content ||
       typeof message.content !== 'string' ||
@@ -60,12 +60,12 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
       }
 
       const steamId = steamIdMatch[0];
-      await this.processUserCommands(steamId);
+      await this.processUserCommands(steamId, serverId);
     }
     return;
   }
 
-  async processUserCommands(steamId: string): Promise<void> {
+  async processUserCommands(steamId: string, serverId: number): Promise<void> {
     const user = await this.commandService.getUserForCommand(steamId);
     if (!user || !user.integration.onewin) {
       return;
@@ -73,7 +73,12 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
     const commands = await this.commandService.getCommandForUserOnServer(
       user.id,
+      serverId,
     );
+
+    if (!commands) {
+      return;
+    }
 
     for (const command of commands) {
       await this.executeCommand(command);
@@ -128,7 +133,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         });
 
         rcon.on('message', async (message) => {
-          await this.handleRconMessage(message);
+          await this.handleRconMessage(message, server.id);
 
           if (message.Identifier === 222) {
             try {

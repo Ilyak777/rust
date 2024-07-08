@@ -34,9 +34,8 @@ export class AuthController {
     const user = req.user;
     const accessToken = this.authService.generateAccessToken(user);
     const refreshToken = this.authService.generateRefreshToken(user);
+    const url = `https://1w.rustresort.com/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`;
 
-    return res.redirect(
-      `localhost:3001/finish-auth?access_token=${accessToken}&refresh_token=${refreshToken}`,
-    );
+    return res.setHeader('Location', url).status(302).end();
   }
 }

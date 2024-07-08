@@ -20,13 +20,13 @@ export class AuthService {
       'openid.mode': 'check_authentication',
       'openid.op_endpoint': 'https://steamcommunity.com/openid/login',
       'openid.claimed_id': query['openid.claimed_id'],
-      'openid.identity': query['openid.identity'],
       'openid.return_to': this.configService.get('RETURN_TO'),
       'openid.response_nonce': query['openid.response_nonce'],
+      'openid.identity': query['openid.identity'],
       'openid.assoc_handle': query['openid.assoc_handle'],
       'openid.signed': query['openid.signed'],
       'openid.sig': query['openid.sig'],
-      'openid.realm': this.configService.get('REALM'),
+      // 'openid.realm': this.configService.get('REALM'),
     });
 
     const response = await axios.post(

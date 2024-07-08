@@ -82,8 +82,6 @@ export class AuthService {
       await this.userService.updateUser(existingUser.id, existingUser);
     } else {
       existingUser = await this.userService.createUser(user);
-      console.log(existingUser);
-      console.log(existingUser[0]);
     }
 
     return existingUser;

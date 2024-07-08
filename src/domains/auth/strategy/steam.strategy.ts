@@ -19,20 +19,25 @@ export class SteamStrategy extends PassportStrategy(Strategy, 'steam') {
   }
 
   async validate(identifier: string, profile: any, done: Function) {
+    console.log('Started');
     if (!profile) {
       return done(new UnauthorizedException(), false);
     }
 
+    console.log('Unauthorized skipped');
     const user = {
       username: profile.displayName,
       steamId: profile.id,
     };
 
+    console.log('Got user');
     try {
       const savedUser = await this.authService.validateAndSaveUser(user);
       await this.authService.updateUserStats(user);
+      console.log('SUCCESS');
       done(null, savedUser);
     } catch (error) {
+      console.log('ERROR');
       done(error, false);
     }
   }

@@ -11,6 +11,8 @@ import { StatisticsModule } from '../statistics/statistics.module';
 import { SteamStats } from '../statistics/entities/steam-statistics.entity';
 import { GameStats } from '../statistics/entities/game-statistics.entity';
 import { UserModule } from '../user/user.module';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { UserModule } from '../user/user.module';
     StatisticsModule,
     UserModule,
   ],
-  providers: [AuthService, ConfigService],
+  providers: [AuthService, ConfigService, JwtAuthGuard, JwtStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

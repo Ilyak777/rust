@@ -93,6 +93,8 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
         });
 
         rcon.on('message', async (message) => {
+          console.log('--------------->', message);
+
           await this.handleRconMessage(message, server.id);
 
           if (message.Identifier === 222) {
@@ -143,6 +145,7 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
     ) {
       const match = message.content.match(/(\d{17})/);
       if (!match) return;
+      console.log('match on connect--->', match);
 
       const steamId = match[0];
       userSet.add(steamId);
@@ -151,8 +154,11 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
     if (message.content.includes('disconnecting')) {
       const match = message.content.match(/\/(\d{17})\//);
       if (!match) return;
+      console.log('match on disconnect--->', match);
 
       const steamId = match[1];
+      console.log('steamId on disconnect-------->', steamId);
+
       userSet.delete(steamId);
     }
   }

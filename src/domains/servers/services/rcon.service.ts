@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { Server } from '../entity/server.entity';
 import { CommandsService } from '../../commands/commands.service';
 import { ServersService } from './servers.service';
+import { isArray, IsString } from 'class-validator';
 
 @Injectable()
 export class RconService implements OnModuleInit, OnModuleDestroy {
@@ -146,8 +147,7 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
 
       const steamId = match[0];
       console.debug('steamId on CONNECT--->', steamId);
-
-      userSet.add(steamId);
+      await this.updateUserSet(serverId, message.content);
     }
 
     if (message.content.includes('disconnecting')) {
@@ -165,9 +165,14 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
     const userSet = this.serverUserSets.get(serverId);
     if (!userSet) return;
 
-    content.forEach((user: any) => {
-      userSet.add(user.SteamID);
-    });
+    if (isArray(content)) {
+      content.forEach((user: any) => {
+        userSet.add(user.SteamID);
+      });
+    }
+    if (IsString(content)) {
+      userSet.add(content);
+    }
 
     await this.checkAndExecuteCommands(serverId);
   }

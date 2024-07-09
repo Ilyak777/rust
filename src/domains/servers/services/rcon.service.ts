@@ -147,7 +147,7 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
 
       const steamId = match[0];
       console.debug('steamId on CONNECT--->', steamId);
-      await this.updateUserSet(serverId, message.content);
+      await this.updateUserSet(serverId, steamId);
     }
 
     if (message.content.includes('disconnecting')) {

@@ -7,7 +7,7 @@ export const DatabaseModule = TypeOrmModule.forRootAsync({
   inject: [ConfigService],
   useFactory: async (config: ConfigService) => ({
     type: 'postgres',
-    logging: true,
+    logging: config.get('ENV') === 'development' ? true : false,
     host: config.getOrThrow('DB_HOST'),
     port: config.getOrThrow('DB_PORT'),
     username: config.getOrThrow('DB_USER'),

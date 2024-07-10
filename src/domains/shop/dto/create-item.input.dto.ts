@@ -3,6 +3,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { ShopItemTypeE } from '../enums/shop-item.enum';
@@ -31,5 +32,6 @@ export class CreateItemDTO {
   price: number;
 
   @IsArray()
+  @IsOptional()
   setItems: SetItemsDTO[];
 }

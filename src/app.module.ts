@@ -13,6 +13,7 @@ import { ShopModule } from './domains/shop/shop.module';
 import { UserModule } from './domains/user/user.module';
 import { CommandsModule } from './domains/commands/commands.module';
 import { IntegrationModule } from './domains/integrations/integration.module';
+import { PaymentModule } from './domains/payment/payment.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { IntegrationModule } from './domains/integrations/integration.module';
     CommandsModule,
     SeederModule,
     ShopModule,
+    PaymentModule,
   ],
   controllers: [],
   providers: [],

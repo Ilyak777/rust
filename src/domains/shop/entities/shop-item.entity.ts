@@ -35,10 +35,13 @@ export class ShopItem {
   })
   category: ShopItemSubtypeE;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'bool', default: true })
+  canBeGifted: boolean;
+
+  @Column({ type: 'int', nullable: true })
   duration: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'float' })
   price: number;
 
   @OneToMany(() => Subscription, (subscription) => subscription.subscriptions)

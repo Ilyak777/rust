@@ -122,4 +122,11 @@ export class ShopController {
     const userId = req.user.userId;
     return this.shopService.addBalance(userId, amount);
   }
+
+  // @UseGuards(JwtAuthGuard)
+  // @Roles(UserRoleE.ADMIN, UserRoleE.OWNER)
+  @Get('seed')
+  seedItems(@Body('amount') amount: number, @Req() req): Promise<void> {
+    return this.shopService.seedItems();
+  }
 }

@@ -73,6 +73,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
   private async startChecking() {
     const servers = await this.serversRepository.find();
+    console.log('started checking server');
 
     await Promise.all(
       servers.map(async (server) => {

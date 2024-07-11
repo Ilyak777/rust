@@ -5,8 +5,9 @@ import { IntegrationRepository } from './integration.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CommandsService } from '../commands/commands.service';
-import { ServersService } from '../servers/services/servers.service';
 import { UserService } from '../user/user.service';
+import e from 'express';
+import { ServersService } from '../servers/services/servers.service';
 
 @Injectable()
 export class IntegrationService {
@@ -38,7 +39,10 @@ export class IntegrationService {
     }
     const user = await this.userService.findById(userId);
     const servers = await this.serverService.findAllServers();
-    await servers.map((el) => {
+    const serversToGive = servers.filter((el) => {
+      return el.id !== 5 && el.id !== 4;
+    });
+    await serversToGive.map((el) => {
       this.commandService.grantSkinbox(userId, user.steamId, el.id);
     });
 

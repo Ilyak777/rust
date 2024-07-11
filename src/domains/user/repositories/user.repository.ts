@@ -98,4 +98,11 @@ export class UserRepository {
   async update(id: number, user: Partial<User>): Promise<void> {
     await this.repository.update(id, user);
   }
+
+  async updateUserIntegration(
+    id: number,
+    integration: Integration,
+  ): Promise<void> {
+    await this.repository.update(id, { integration: integration });
+  }
 }

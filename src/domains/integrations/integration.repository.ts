@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { OneWinIntegration } from './entities/integration-1win.entity';
 import { Integration } from './entities/integration.entity';
 import { UserService } from '../user/user.service';
+import { UserRepository } from '../user/repositories/user.repository';
 
 @Injectable()
 export class IntegrationRepository {
@@ -13,6 +14,7 @@ export class IntegrationRepository {
     @InjectRepository(Integration)
     private userIntegration: Repository<Integration>,
     private userService: UserService,
+    private userRepository: UserRepository,
   ) {}
 
   async getOneWinIntegration(clientId: string): Promise<OneWinIntegration> {
@@ -54,7 +56,8 @@ export class IntegrationRepository {
     const integrationDone = await this.oneWinRepository.save(integration);
 
     userIntegrations.onewin = integrationDone;
-    await this.userIntegration.save(userIntegrations);
+    const savedInt = await this.userIntegration.save(userIntegrations);
+    await this.userRepository.updateUserIntegration(userId, savedInt);
 
     return integrationDone;
   }

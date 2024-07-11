@@ -56,7 +56,12 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
         address = address.replace(/"/g, '');
 
         const [rcon_host, rcon_port] = address.split(':');
-        const port = parseInt(rcon_port, 10) + 10000;
+        let port;
+        if (parseInt(rcon_port, 10) === 50000) {
+          port = parseInt(rcon_port, 10) + 1;
+        } else {
+          port = parseInt(rcon_port, 10) + 10000;
+        }
 
         const rcon = new Client({
           ip: rcon_host,

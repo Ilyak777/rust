@@ -183,22 +183,26 @@ export class RconService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async checkAndExecuteCommands(serverId: number): Promise<void> {
-    const userSet = this.serverUserSets.get(serverId);
-    if (!userSet) return;
+    try {
+      const userSet = this.serverUserSets.get(serverId);
+      if (!userSet) return;
 
-    const commands = await this.commandService.findByServerId(serverId);
-    if (!commands) return;
-    commands.forEach(async (command) => {
-      if (userSet.has(command.user.steamId)) {
-        const rcon = this.rconClients.get(serverId);
-        if (rcon) {
-          rcon.send(command.command, 'M3RCURRRY', 3);
-          await this.commandService.deleteCommand(command);
-          console.debug(
-            `user ${command.user.steamId} was granted with a ${command.type}`,
-          );
+      const commands = await this.commandService.findByServerId(serverId);
+      if (!commands) return;
+      commands.forEach(async (command) => {
+        if (userSet.has(command.user.steamId)) {
+          const rcon = this.rconClients.get(serverId);
+          if (rcon) {
+            rcon.send(command.command, 'M3RCURRRY', 3);
+            await this.commandService.deleteCommand(command);
+            console.debug(
+              `user ${command.user.steamId} was granted with a ${command.type}`,
+            );
+          }
         }
-      }
-    });
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

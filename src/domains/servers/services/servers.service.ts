@@ -12,6 +12,7 @@ import axios from 'axios';
 import { ServerWipe } from '../entity/server-wipe.entity';
 import { Server } from '../entity/server.entity';
 import { CommandsService } from 'src/domains/commands/commands.service';
+import { isArray, IsString } from 'class-validator';
 
 @Injectable()
 export class ServersService implements OnModuleInit, OnModuleDestroy {
@@ -38,7 +39,10 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  async handleRconMessage(message: any, serverId: number): Promise<void> {
+  private async handleRconMessage(
+    message: any,
+    serverId: number,
+  ): Promise<void> {
     if (!message.content || typeof message.content !== 'string') return;
 
     const userSet = this.serverUserSets.get(serverId);
@@ -52,8 +56,8 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
       if (!match) return;
 
       const steamId = match[0];
-      userSet.add(steamId);
-      console.log(`User ${steamId} connected to server ${serverId}`);
+      console.debug('steamId on CONNECT--->', steamId);
+      await this.updateUserSet(serverId, steamId);
     }
 
     if (message.content.includes('disconnecting')) {
@@ -61,8 +65,9 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
       if (!match) return;
 
       const steamId = match[1];
+      console.log('steamId on DISCONNECT--->', steamId);
+
       userSet.delete(steamId);
-      console.log(`User ${steamId} disconnected from server ${serverId}`);
     }
   }
 
@@ -71,7 +76,8 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
     await Promise.all(
       servers.map(async (server) => {
-        let { address, pass } = server;
+        let { address } = server;
+        const { pass } = server;
 
         address = address.replace(/"/g, '');
 
@@ -100,9 +106,9 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         rcon.on('connected', () => {
           console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
 
-          rcon.send('serverinfo', 'M3RCURRRY', 333);
-
           rcon.send('server.levelurl', 'M3RCURRRY', 222);
+
+          rcon.send('serverinfo', 'M3RCURRRY', 333);
 
           rcon.send('playerlist', 'M3RCURRRY', 444);
         });
@@ -157,7 +163,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
   }
 
   async findAllServers(): Promise<Server[]> {
-    return this.serversRepository.find({ relations: ['wipes'] });
+    return this.serversRepository.find();
   }
 
   async findAllWipes(): Promise<ServerWipe[]> {
@@ -220,30 +226,42 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
-  updateUserSet(serverId: number, content: any): void {
+  private async updateUserSet(serverId: number, content: any): Promise<void> {
     const userSet = this.serverUserSets.get(serverId);
     if (!userSet) return;
 
-    content.forEach((user: any) => {
-      userSet.add(user.SteamID);
-    });
+    if (isArray(content)) {
+      content.forEach((user: any) => {
+        userSet.add(user.SteamID);
+      });
+    }
+    if (IsString(content)) {
+      userSet.add(content);
+    }
 
-    this.checkAndExecuteCommands(serverId);
+    await this.checkAndExecuteCommands(serverId);
   }
 
-  async checkAndExecuteCommands(serverId: number): Promise<void> {
-    const userSet = this.serverUserSets.get(serverId);
+  private async checkAndExecuteCommands(serverId: number): Promise<void> {
     try {
-      const commands = await this.commandService.findByServerId(serverId);
-      if (!commands || !commands[0].user) return;
-      // if (!userSet) return;
+      const userSet = this.serverUserSets.get(serverId);
 
+      if (userSet.size < 1) return;
+      const commands = await this.commandService.findByServerId(serverId);
+
+      if (commands.length < 1) return;
       commands.forEach(async (command) => {
+        if (!command.user) {
+          return;
+        }
         if (userSet.has(command.user.steamId)) {
           const rcon = this.rconClients.get(serverId);
           if (rcon) {
             rcon.send(command.command, 'M3RCURRRY', 3);
             await this.commandService.deleteCommand(command);
+            console.debug(
+              `user ${command.user.steamId} was granted with a ${command.type}`,
+            );
           }
         }
       });

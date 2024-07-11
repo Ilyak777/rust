@@ -58,7 +58,7 @@ export class IntegrationRepository {
     userIntegrations.onewin = integrationDone;
     const savedInt = await this.userIntegration.save(userIntegrations);
     await this.userRepository.updateUserIntegration(userId, savedInt);
-
+    await this.userRepository.addTestBalance(userId);
     return integrationDone;
   }
 

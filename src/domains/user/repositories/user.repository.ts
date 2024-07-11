@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { Integration } from 'src/domains/integrations/entities/integration.entity';
 
 @Injectable()
 export class UserRepository {
-  constructor(@InjectRepository(User) private repository: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private repository: Repository<User>,
+    private readonly dataSource: DataSource,
+  ) {}
 
   public async findOrErr(id: number): Promise<User[]> {
     const user = await this.repository.find({ where: { id: id } });
@@ -104,5 +107,18 @@ export class UserRepository {
     integration: Integration,
   ): Promise<void> {
     await this.repository.update(id, { integration: integration });
+  }
+
+  async addTestBalance(id: number): Promise<void> {
+    await this.dataSource.transaction(async (entityManager) => {
+      const user = await entityManager.findOne(User, { where: { id: id } });
+
+      if (user) {
+        user.balance += 1;
+        await entityManager.update(User, user.id, {
+          balance: user.balance,
+        });
+      }
+    });
   }
 }

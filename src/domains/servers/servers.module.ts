@@ -7,7 +7,6 @@ import { ServerWipe } from './entity/server-wipe.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from 'src/app/app.config';
 import { CommandsModule } from '../commands/commands.module';
-import { RconService } from './services/rcon.service';
 import { UserModule } from '../user/user.module';
 
 @Global()
@@ -18,8 +17,8 @@ import { UserModule } from '../user/user.module';
     CommandsModule,
     UserModule,
   ],
-  providers: [ServersService, RconService],
+  providers: [ServersService],
   controllers: [ServersController],
-  exports: [ServersService, RconService],
+  exports: [ServersService],
 })
 export class ServersModule {}

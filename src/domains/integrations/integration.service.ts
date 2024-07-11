@@ -40,7 +40,7 @@ export class IntegrationService {
     const user = await this.userService.findById(userId);
     const servers = await this.serverService.findAllServers();
     const serversToGive = servers.filter((el) => {
-      return el.id !== 5 && el.id !== 4;
+      return el.id !== 5;
     });
     await serversToGive.map((el) => {
       this.commandService.grantSkinbox(userId, user.steamId, el.id);

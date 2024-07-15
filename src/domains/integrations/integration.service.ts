@@ -6,8 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CommandsService } from '../commands/commands.service';
 import { UserService } from '../user/user.service';
-import e from 'express';
-import { ServersService } from '../servers/services/servers.service';
+import { ServersService } from '../servers/servers.service';
 
 @Injectable()
 export class IntegrationService {
@@ -43,7 +42,7 @@ export class IntegrationService {
       return el.id !== 5;
     });
     await serversToGive.map((el) => {
-      this.commandService.grantSkinbox(userId, user.steamId, el.id);
+      this.commandService.grantSkinbox(userId, el.id);
     });
 
     return await this.checkOneWinIntegration(userId, payload.oci, payload.oce);

@@ -27,12 +27,12 @@ export class Server {
   @OneToMany(() => ServerWipe, (wipe) => wipe.server)
   wipes: ServerWipe[];
 
-  @OneToMany(() => ShopItem, (item) => item.servers)
-  shopItem: ShopItem;
+  @OneToMany(() => ShopItem, (item) => item.server)
+  shopItem: ShopItem[];
 
   @OneToMany(() => Subscription, (item) => item.servers)
   subscriptions: ShopItem;
 
-  @OneToMany(() => Commands, (item) => item.server)
-  command: Commands;
+  @OneToMany(() => Commands, (item) => item.command)
+  command: Commands[];
 }

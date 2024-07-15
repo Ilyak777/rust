@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { ShopItem } from '../../shop/entities/shop-item.entity';
 
@@ -14,4 +20,7 @@ export class OrderHistory {
   @ManyToOne(() => ShopItem, (shopItem) => shopItem.orderHistories)
   @JoinColumn({ name: 'shopItemId' })
   purchases: ShopItem;
+
+  @CreateDateColumn()
+  createdAt: string;
 }

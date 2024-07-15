@@ -32,6 +32,7 @@ export class ShopItem {
   @Column({
     type: 'enum',
     enum: ShopItemSubtypeE,
+    nullable: true,
   })
   category: ShopItemSubtypeE;
 
@@ -57,7 +58,8 @@ export class ShopItem {
   orderHistories: OrderHistory[];
 
   @ManyToOne(() => Server, (server) => server.shopItem)
-  servers: Server[];
+  @JoinColumn({ name: 'serverId' })
+  server: Server;
 
   @OneToOne(() => SetItems, { cascade: true })
   @JoinColumn()

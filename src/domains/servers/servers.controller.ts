@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { ServersService } from './services/servers.service';
+import { ServersService } from './servers.service';
 import { Server } from './entity/server.entity';
 import { ServerWipe } from './entity/server-wipe.entity';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -33,7 +33,7 @@ export class ServersController {
   })
   @Get('online')
   getServersOnline(): Promise<any> {
-    return this.serversService.getAllServerInfo();
+    return this.serversService.getServerOnline();
   }
 
   @ApiOperation({ summary: 'Add a new server' })

@@ -19,6 +19,13 @@ export class UserRepository {
     return user;
   }
 
+  public async findByIdWithSubscriptions(id: number): Promise<User> {
+    return await this.repository.findOne({
+      where: { id },
+      relations: ['activeSubscriptions', 'activeSubscriptions.subscriptions'],
+    });
+  }
+
   public async findById(id: number): Promise<User> {
     return await this.repository.findOne({
       where: { id },

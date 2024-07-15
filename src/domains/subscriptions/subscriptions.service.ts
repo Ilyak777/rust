@@ -8,14 +8,14 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { ShopItem } from '../shop/entities/shop-item.entity';
 import { Subscription } from './entities/subscription.entity';
+import { UserService } from '../user/user.service';
+import { ShopService } from '../shop/shop.service';
 
 @Injectable()
 export class SubscriptionService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    @InjectRepository(ShopItem)
-    private shopItemRepository: Repository<ShopItem>,
+    private userService: UserService,
+    private shopService: ShopService,
     @InjectRepository(Subscription)
     private userSubscriptionRepository: Repository<Subscription>,
   ) {}
@@ -27,10 +27,7 @@ export class SubscriptionService {
   }
 
   async getUserSubscriptions(userId: number): Promise<Subscription[]> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['activeSubscriptions', 'activeSubscriptions.subscriptions'],
-    });
+    const user = await this.userService.findByIdWithActiveSubscriptions(userId);
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -43,15 +40,12 @@ export class SubscriptionService {
     userId: number,
     shopItemId: number,
   ): Promise<Subscription> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userService.findById(userId);
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
-    const shopItem = await this.shopItemRepository.findOne({
-      where: { id: shopItemId },
-    });
+    const shopItem = await this.shopService.getItemById(shopItemId)[0];
 
     if (!shopItem) {
       throw new NotFoundException('Shop item not found');
@@ -62,7 +56,7 @@ export class SubscriptionService {
     }
 
     user.balance -= shopItem.price;
-    await this.userRepository.save(user);
+    await this.userService.createUser(user);
 
     const expiredAt = new Date();
     expiredAt.setSeconds(expiredAt.getSeconds() + shopItem.duration);
@@ -80,10 +74,7 @@ export class SubscriptionService {
     userId: number,
     subscriptionId: number,
   ): Promise<Subscription> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['activeSubscriptions', 'activeSubscriptions.subscriptions'],
-    });
+    const user = await this.userService.findByIdWithActiveSubscriptions(userId);
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -104,7 +95,7 @@ export class SubscriptionService {
     }
 
     user.balance -= shopItem.price;
-    await this.userRepository.save(user);
+    await this.userService.createUser(user);
 
     subscription.expiredAt.setSeconds(
       subscription.expiredAt.getSeconds() + shopItem.duration,
@@ -117,10 +108,7 @@ export class SubscriptionService {
     userId: number,
     subscriptionId: number,
   ): Promise<Subscription> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['activeSubscriptions'],
-    });
+    const user = await this.userService.findByIdWithActiveSubscriptions(userId);
 
     if (!user) {
       throw new NotFoundException('User not found');

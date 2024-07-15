@@ -25,12 +25,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CommandsService } from '../commands/commands.service';
 
 @ApiTags('shop')
 @Controller('shop')
 @UseInterceptors(CacheInterceptor)
 export class ShopController {
-  constructor(private readonly shopService: ShopService) {}
+  constructor(
+    private readonly shopService: ShopService,
+    private commandService: CommandsService,
+  ) {}
 
   @ApiOperation({ summary: 'Get all active shop items' })
   @ApiResponse({
@@ -53,9 +57,8 @@ export class ShopController {
     description: 'All active shop items for the server have been retrieved.',
   })
   @UseInterceptors(DynamicCacheKeyInterceptor)
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @CacheTTL(100)
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard)
   @Get('items/:serverId')
   getAllActiveItemsForServer(
     @Param('serverId') serverId: number,
@@ -81,33 +84,16 @@ export class ShopController {
     status: 200,
     description: 'The shop item has been purchased.',
   })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Post('purchase/:shopItemId')
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard)
+  @Post('purchase/:serverId')
   purchaseItem(
     @Param('serverId') serverId: number,
     @Body() itemIds: number[],
     @Req() req,
   ): Promise<void> {
-    const userId = req.user.userId;
-    return this.shopService.purchaseItem(userId, itemIds, serverId);
-  }
-
-  @ApiOperation({ summary: 'Purchase a shop item' })
-  @ApiResponse({
-    status: 200,
-    description: 'The shop item has been purchased.',
-  })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Post('purchase/:shopItemId')
-  deleteItem(
-    @Param('serverId') serverId: number,
-    @Body() itemIds: number[],
-    @Req() req,
-  ): Promise<void> {
-    const userId = req.user.userId;
-    return this.shopService.purchaseItem(userId, itemIds, serverId);
+    // const userId = req.user.userId;
+    return this.shopService.purchaseItem(2, itemIds, serverId);
   }
 
   @ApiOperation({ summary: 'Add balance to a user account' })
@@ -117,16 +103,10 @@ export class ShopController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @Roles(UserRoleE.ADMIN, UserRoleE.OWNER)
   @Patch('addBalance/:userId')
   addBalance(@Body('amount') amount: number, @Req() req): Promise<User> {
     const userId = req.user.userId;
     return this.shopService.addBalance(userId, amount);
-  }
-
-  // @UseGuards(JwtAuthGuard)
-  // @Roles(UserRoleE.ADMIN, UserRoleE.OWNER)
-  @Get('seed')
-  seedItems(@Body('amount') amount: number, @Req() req): Promise<void> {
-    return this.shopService.seedItems();
   }
 }

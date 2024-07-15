@@ -10,18 +10,19 @@ import { RedisOptions } from 'src/app/app.config';
 import { UserModule } from '../user/user.module';
 import { CommandsModule } from '../commands/commands.module';
 import { ServersModule } from '../servers/servers.module';
-import { User } from '../user/entities/user.entity';
 import { UserRepository } from '../user/repositories/user.repository';
+import { SubscriptionModule } from '../subscriptions/subscriptions.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OneWinIntegration, Integration, User]),
+    TypeOrmModule.forFeature([OneWinIntegration, Integration]),
     CacheModule.registerAsync(RedisOptions),
     UserModule,
     CommandsModule,
     ServersModule,
+    SubscriptionModule,
   ],
-  providers: [IntegrationService, IntegrationRepository, UserRepository],
+  providers: [IntegrationService, IntegrationRepository],
   controllers: [IntegrationController],
 })
 export class IntegrationModule {}

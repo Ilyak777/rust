@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Commands } from './entity/commands.entity';
 import { UserService } from '../user/user.service';
 import { CommandsTypeE } from './enum/commands-type.enum';
+import logger from 'src/app/log';
+import { SubscriptionService } from '../subscriptions/subscriptions.service';
 
 @Injectable()
 export class CommandsService {
@@ -11,6 +13,7 @@ export class CommandsService {
     @InjectRepository(Commands)
     private readonly commandsRepository: Repository<Commands>,
     private userService: UserService,
+    private subscriptionService: SubscriptionService,
   ) {}
 
   async findByServerId(serverId: number) {
@@ -41,19 +44,24 @@ export class CommandsService {
     return this.commandsRepository.delete({ id });
   }
 
-  async saveCommand(userId: number): Promise<void> {
-    const user = await this.userService.findById(userId);
-    if (!user || !user.steamId) {
-      throw new Error('User not found or no Steam ID');
+  async saveCommand(
+    userId: number,
+    serverId: number,
+    commandStr: string,
+  ): Promise<void> {
+    try {
+      const newCommand = this.commandsRepository.create({
+        command: commandStr,
+        user: { id: userId },
+        server: { id: serverId },
+        type: CommandsTypeE.SUBSCRIPTION,
+      });
+
+      await this.commandsRepository.save(newCommand);
+    } catch (error) {
+      logger.error(`Error while saving command ${error}`);
+      throw new Error('Error while saving command');
     }
-
-    const command = `o.grant user ${user.steamId} skinbox.nickname`;
-    const newCommand = this.commandsRepository.create({
-      command: command,
-      user: { id: userId },
-    });
-
-    await this.commandsRepository.save(newCommand);
   }
 
   async getUserForCommand(steamId: string): Promise<any> {
@@ -65,11 +73,7 @@ export class CommandsService {
     }
   }
 
-  async grantSkinbox(
-    userId: number,
-    steamId: string,
-    serverId: number,
-  ): Promise<void> {
+  async grantSkinbox(userId: number, serverId: number): Promise<void> {
     const userToGrant = await this.userService.findById(userId);
     if (!userToGrant || !userToGrant.steamId) {
       throw new Error('User not found or no Steam ID');

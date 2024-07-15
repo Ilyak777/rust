@@ -9,10 +9,11 @@ import { Repository } from 'typeorm';
 import { Cache } from '@nestjs/cache-manager';
 import { Client } from 'rustrcon';
 import axios from 'axios';
-import { ServerWipe } from '../entity/server-wipe.entity';
-import { Server } from '../entity/server.entity';
+import { ServerWipe } from './entity/server-wipe.entity';
+import { Server } from './entity/server.entity';
 import { CommandsService } from 'src/domains/commands/commands.service';
 import { isArray, IsString } from 'class-validator';
+import logger from '../../app/log';
 
 @Injectable()
 export class ServersService implements OnModuleInit, OnModuleDestroy {
@@ -29,7 +30,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   async onModuleInit() {
-    console.log('Starting server checking...');
+    logger.debug('Starting server checking...');
     await this.startChecking();
   }
 
@@ -56,8 +57,10 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
       if (!match) return;
 
       const steamId = match[0];
-      console.debug('steamId on CONNECT--->', steamId);
-      await this.updateUserSet(serverId, steamId);
+      logger.debug(
+        `User with steamId ${steamId} connected to with Id  ${serverId}`,
+      );
+      await this.updateUserSet(serverId, steamId.trim());
     }
 
     if (message.content.includes('disconnecting')) {
@@ -65,15 +68,16 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
       if (!match) return;
 
       const steamId = match[1];
-      console.log('steamId on DISCONNECT--->', steamId);
+      logger.debug(
+        `User with steamId ${steamId} disconnected from server with Id ${serverId}`,
+      );
 
-      userSet.delete(steamId);
+      userSet.delete(steamId.trim());
     }
   }
 
   private async startChecking() {
     const servers = await this.serversRepository.find();
-    console.log('started checking server');
 
     await Promise.all(
       servers.map(async (server) => {
@@ -101,11 +105,11 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
           this.rconClients.set(server.id, rcon);
           this.serverUserSets.set(server.id, new Set<string>());
         } catch (error) {
-          console.log(error);
+          logger.error(`Error while connecting to RCON ${error.message}`);
         }
 
         rcon.on('connected', () => {
-          console.log(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
+          logger.debug(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
 
           rcon.send('server.levelurl', 'M3RCURRRY', 222);
 
@@ -115,11 +119,11 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         });
 
         rcon.on('error', (err) => {
-          console.error(err);
+          logger.error(`Error after connection to RCON ${err.message}`);
         });
 
         rcon.on('disconnect', () => {
-          console.log('Disconnected from RCON websocket');
+          logger.debug('Disconnected from RCON websocket');
         });
 
         rcon.on('message', async (message) => {
@@ -144,7 +148,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
               serverOnline: message.content.Players,
               maxServerOnline: message.content.MaxPlayers,
             };
-            await this.cacheManager.set(cacheKey, serverOnline, 10000);
+            await this.cacheManager.set(cacheKey, serverOnline, 10);
           }
 
           if (message.Identifier === 444) {
@@ -176,7 +180,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     return this.serversRepository.save(server);
   }
 
-  async getAllServerInfo(): Promise<any[]> {
+  async getServerOnline(): Promise<any[]> {
     const servers = await this.serversRepository.find();
     const serverInfos = await Promise.all(
       servers.map(async (server) => {
@@ -195,13 +199,11 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
           if (rcon) {
             rcon.send('serverinfo', 'M3RCURRRY', 333);
           } else {
-            console.log(`No RCON client for server ${server.id}`);
+            logger.debug(`No RCON client for server ${server.id}`);
           }
 
           serverOnline = await this.cacheManager.get(cacheKey);
         }
-
-        console.log(`Cache hit for server ${host}:${port}`);
 
         return Object.assign(server, serverOnline);
       }),
@@ -222,7 +224,6 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         const cacheKey = `server-info-${host}:${port}`;
 
         await this.cacheManager.del(cacheKey);
-        console.log(`Deleted cache for ${cacheKey}`);
       }),
     );
   }
@@ -243,10 +244,9 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     await this.checkAndExecuteCommands(serverId);
   }
 
-  private async checkAndExecuteCommands(serverId: number): Promise<void> {
+  async checkAndExecuteCommands(serverId: number): Promise<void> {
     try {
       const userSet = this.serverUserSets.get(serverId);
-
       if (userSet.size < 1) return;
       const commands = await this.commandService.findByServerId(serverId);
 
@@ -260,7 +260,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
           if (rcon) {
             rcon.send(command.command, 'M3RCURRRY', 3);
             await this.commandService.deleteCommand(command);
-            console.debug(
+            logger.info(
               `user ${command.user.steamId} was granted with a ${command.type}`,
             );
           }

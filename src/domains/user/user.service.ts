@@ -33,6 +33,10 @@ export class UserService {
     return this.repo.findById(userId);
   }
 
+  async findByIdWithActiveSubscriptions(userId: number) {
+    return this.repo.findById(userId);
+  }
+
   async getMe(userId: number): Promise<User> {
     const user = await this.repo.findById(userId);
     if (!user) {

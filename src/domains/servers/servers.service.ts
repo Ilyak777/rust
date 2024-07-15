@@ -295,7 +295,6 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         ? 'SKINBOX'
         : 'SUBSCRIPTION';
       console.log('[LOGGED]: EXECUTING STRAIGHT COMMAND');
-      console.log(rcon);
       if (rcon) {
         rcon.send(command, 'M3RCURRRY', 3);
         logger.info(`user ${steamId} was granted with a ${type}`);

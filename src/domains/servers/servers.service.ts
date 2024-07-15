@@ -81,82 +81,93 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
     await Promise.all(
       servers.map(async (server) => {
-        let { address } = server;
-        const { pass } = server;
+        await this.connectToServer(server);
+      }),
+    );
+  }
 
-        address = address.replace(/"/g, '');
+  private async connectToServer(server: Server) {
+    let { address } = server;
+    const { pass } = server;
 
-        const [rcon_host, rcon_port] = address.split(':');
-        let port;
-        if (parseInt(rcon_port, 10) === 50000) {
-          port = parseInt(rcon_port, 10) + 1;
-        } else {
-          port = parseInt(rcon_port, 10) + 10000;
-        }
+    address = address.replace(/"/g, '');
 
-        const rcon = new Client({
-          ip: rcon_host,
-          port: port,
-          password: pass,
-        });
+    const [rcon_host, rcon_port] = address.split(':');
+    let port;
+    if (parseInt(rcon_port, 10) === 50000) {
+      port = parseInt(rcon_port, 10) + 1;
+    } else {
+      port = parseInt(rcon_port, 10) + 10000;
+    }
 
+    const rcon = new Client({
+      ip: rcon_host,
+      port: port,
+      password: pass,
+    });
+
+    const tryReconnect = async () => {
+      while (true) {
         try {
           await rcon.login();
           this.rconClients.set(server.id, rcon);
           this.serverUserSets.set(server.id, new Set<string>());
+          break;
         } catch (error) {
           logger.error(`Error while connecting to RCON ${error.message}`);
+          await new Promise((resolve) => setTimeout(resolve, 5000));
         }
+      }
+    };
 
-        rcon.on('connected', () => {
-          logger.debug(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
+    await tryReconnect();
 
-          rcon.send('server.levelurl', 'M3RCURRRY', 222);
+    rcon.on('connected', () => {
+      logger.debug(`Connected to ${rcon.ws.ip}:${rcon.ws.port}`);
 
-          rcon.send('serverinfo', 'M3RCURRRY', 333);
+      rcon.send('server.levelurl', 'M3RCURRRY', 222);
+      rcon.send('serverinfo', 'M3RCURRRY', 333);
+      rcon.send('playerlist', 'M3RCURRRY', 444);
+    });
 
-          rcon.send('playerlist', 'M3RCURRRY', 444);
-        });
+    rcon.on('error', (err) => {
+      logger.error(`Error after connection to RCON ${err.message}`);
+    });
 
-        rcon.on('error', (err) => {
-          logger.error(`Error after connection to RCON ${err.message}`);
-        });
+    rcon.on('disconnect', async () => {
+      logger.debug('Disconnected from RCON websocket');
+      await tryReconnect();
+    });
 
-        rcon.on('disconnect', () => {
-          logger.debug('Disconnected from RCON websocket');
-        });
+    rcon.on('message', async (message) => {
+      await this.handleRconMessage(message, server.id);
 
-        rcon.on('message', async (message) => {
-          await this.handleRconMessage(message, server.id);
-
-          if (message.Identifier === 222) {
-            try {
-              if (!server.rustMapsId) {
-                this.getAndSetMap(rcon_host + ':' + rcon_port, message.content);
-              }
-            } catch (error) {
-              console.log(error);
-            }
+      if (message.Identifier === 222) {
+        try {
+          if (!server.rustMapsId) {
+            this.getAndSetMap(rcon_host + ':' + rcon_port, message.content);
           }
-          if (message.Identifier === 333) {
-            const cacheKey = `server-info-${rcon_host}:${port}`;
-            const cachedResult = await this.cacheManager.get(cacheKey);
-            if (cachedResult) {
-              await this.cacheManager.del(cacheKey);
-            }
-            const serverOnline = {
-              serverOnline: message.content.Players,
-              maxServerOnline: message.content.MaxPlayers,
-            };
-            await this.cacheManager.set(cacheKey, serverOnline, 10);
-          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      if (message.Identifier === 333) {
+        const cacheKey = `server-info-${rcon_host}:${port}`;
+        const cachedResult = await this.cacheManager.get(cacheKey);
+        if (cachedResult) {
+          await this.cacheManager.del(cacheKey);
+        }
+        const serverOnline = {
+          serverOnline: message.content.Players,
+          maxServerOnline: message.content.MaxPlayers,
+        };
+        await this.cacheManager.set(cacheKey, serverOnline, 10);
+      }
 
-          if (message.Identifier === 444) {
-            this.updateUserSet(server.id, message.content);
-          }
-        });
-      }),
-    );
+      if (message.Identifier === 444) {
+        this.updateUserSet(server.id, message.content);
+      }
+    });
   }
 
   async getServers(): Promise<Server[]> {

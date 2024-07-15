@@ -121,7 +121,7 @@ export class UserRepository {
       const user = await entityManager.findOne(User, { where: { id: id } });
 
       if (user) {
-        user.balance += 1;
+        user.balance += 1.14;
         await entityManager.update(User, user.id, {
           balance: user.balance,
         });

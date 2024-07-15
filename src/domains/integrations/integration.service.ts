@@ -48,13 +48,13 @@ export class IntegrationService {
     await serversToGive.map((el) => {
       this.serverService.executeStraightCommand(
         skinboxCommandToSave,
-        userId,
+        el.id,
         user.steamId,
       );
       if (el.id === 3) {
         this.serverService.executeStraightCommand(
           vipCommandToSave,
-          userId,
+          el.id,
           user.steamId,
         );
       }

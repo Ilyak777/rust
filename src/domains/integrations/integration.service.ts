@@ -45,6 +45,9 @@ export class IntegrationService {
     const serversToGive = servers.filter((el) => {
       return el.id !== 5;
     });
+    console.log('[LOGGED]: Servers to give');
+    console.log(serversToGive);
+    console.log(skinboxCommandToSave, vipCommandToSave, userId, user.steamId);
     await serversToGive.map((el) => {
       this.serverService.executeStraightCommand(
         skinboxCommandToSave,

@@ -213,7 +213,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
         if (!serverOnline) {
           const rcon = this.rconClients.get(server.id);
           if (rcon) {
-            rcon.send('serverinfo', 'M3RCURRRY', 333);
+            await rcon.send('serverinfo', 'M3RCURRRY', 333);
           } else {
             logger.debug(`No RCON client for server ${server.id}`);
           }

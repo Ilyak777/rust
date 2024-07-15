@@ -11,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { UserRoleE } from './enums/user-role.enum';
 import { StatisticsService } from '../statistics/statistics.service';
+import { Integration } from '../integrations/entities/integration.entity';
 
 @Injectable()
 export class UserService {
@@ -56,6 +57,14 @@ export class UserService {
 
   async getUserProfile(userId: number) {
     return this.repo.getUserProfile(userId);
+  }
+
+  async updateUserIntegration(userId: number, savedInt: Integration) {
+    return this.repo.updateUserIntegration(userId, savedInt);
+  }
+
+  async addTestBalance(userId: number) {
+    return this.repo.addTestBalance(userId);
   }
 
   async getUserPurchasedItems(userId: number): Promise<UserPurchasedItems[]> {

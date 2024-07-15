@@ -13,6 +13,7 @@ import { CommandsModule } from '../commands/commands.module';
   imports: [
     TypeOrmModule.forFeature([Server, ServerWipe]),
     CacheModule.registerAsync(RedisOptions),
+    CommandsModule,
   ],
   providers: [ServersService],
   controllers: [ServersController],

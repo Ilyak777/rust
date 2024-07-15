@@ -271,6 +271,25 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  async executeStraightCommand(
+    command: string,
+    serverId: number,
+    steamId: string,
+  ): Promise<void> {
+    try {
+      const rcon = this.rconClients.get(serverId);
+      const type = command.includes('skinbox.nickname')
+        ? 'SKINBOX'
+        : 'SUBSCRIPTION';
+      if (rcon) {
+        rcon.send(command, 'M3RCURRRY', 3);
+        logger.info(`user ${steamId} was granted with a ${type}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async addWipe(
     serverId: number,
     wipeData: Partial<ServerWipe>,

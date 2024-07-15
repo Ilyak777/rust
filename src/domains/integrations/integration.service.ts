@@ -37,12 +37,27 @@ export class IntegrationService {
       throw new BadRequestException('onewin-already-exists');
     }
     const user = await this.userService.findById(userId);
+
+    const skinboxCommandToSave = `o.grant user ${user.steamId} skinbox.nickname`;
+    const vipCommandToSave = `addgroup ${user.steamId} vip 3d`;
+
     const servers = await this.serverService.findAllServers();
     const serversToGive = servers.filter((el) => {
       return el.id !== 5;
     });
     await serversToGive.map((el) => {
-      this.commandService.grantSkinbox(userId, el.id);
+      this.serverService.executeStraightCommand(
+        skinboxCommandToSave,
+        userId,
+        user.steamId,
+      );
+      if (el.id === 3) {
+        this.serverService.executeStraightCommand(
+          vipCommandToSave,
+          userId,
+          user.steamId,
+        );
+      }
     });
 
     return await this.checkOneWinIntegration(userId, payload.oci, payload.oce);

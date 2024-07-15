@@ -35,21 +35,21 @@ export class SubscriptionsController {
     return this.service.getUserSubscriptions(userId);
   }
 
-  @ApiOperation({ summary: 'Purchase a subscription' })
-  @ApiResponse({
-    status: 200,
-    description: 'Subscription purchased successfully.',
-  })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Post('/:shopItemId')
-  purchaseSubscription(
-    @Req() req,
-    @Param('shopItemId') shopItemId: number,
-  ): Promise<Subscription> {
-    const userId = req.user.userId;
-    return this.service.purchaseSubscription(userId, shopItemId);
-  }
+  // @ApiOperation({ summary: 'Purchase a subscription' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Subscription purchased successfully.',
+  // })
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard)
+  // @Post('/:shopItemId')
+  // purchaseSubscription(
+  //   @Req() req,
+  //   @Param('shopItemId') shopItemId: number,
+  // ): Promise<Subscription> {
+  //   const userId = req.user.userId;
+  //   return this.service.purchaseSubscription(userId, shopItemId);
+  // }
 
   @ApiOperation({ summary: 'Renew a subscription' })
   @ApiResponse({

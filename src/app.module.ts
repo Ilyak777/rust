@@ -9,7 +9,7 @@ import { ServersModule } from './domains/servers/servers.module';
 import { StatisticsModule } from './domains/statistics/statistics.module';
 import { ProfileModule } from './domains/profile/profile.module';
 import { SeederModule } from './domains/seed/seed.module';
-import { ShopModule } from './domains/shop/shop.module';
+// import { ShopModule } from './domains/shop/shop.module';
 import { UserModule } from './domains/user/user.module';
 import { CommandsModule } from './domains/commands/commands.module';
 import { IntegrationModule } from './domains/integrations/integration.module';
@@ -35,7 +35,7 @@ import { SubscriptionModule } from './domains/subscriptions/subscriptions.module
     SeederModule,
     PaymentModule,
     SubscriptionModule,
-    ShopModule,
+    // ShopModule,
   ],
   controllers: [],
   providers: [],

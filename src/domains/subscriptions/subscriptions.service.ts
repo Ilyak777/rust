@@ -15,7 +15,6 @@ import { ShopService } from '../shop/shop.service';
 export class SubscriptionService {
   constructor(
     private userService: UserService,
-    private shopService: ShopService,
     @InjectRepository(Subscription)
     private userSubscriptionRepository: Repository<Subscription>,
   ) {}
@@ -36,39 +35,39 @@ export class SubscriptionService {
     return user.activeSubscriptions;
   }
 
-  async purchaseSubscription(
-    userId: number,
-    shopItemId: number,
-  ): Promise<Subscription> {
-    const user = await this.userService.findById(userId);
+  // async purchaseSubscription(
+  //   userId: number,
+  //   shopItemId: number,
+  // ): Promise<Subscription> {
+  //   const user = await this.userService.findById(userId);
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const shopItem = await this.shopService.getItemById(shopItemId)[0];
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
+  //   // const shopItem = await this.shopService.getItemById(shopItemId)[0];
 
-    if (!shopItem) {
-      throw new NotFoundException('Shop item not found');
-    }
+  //   if (!shopItem) {
+  //     throw new NotFoundException('Shop item not found');
+  //   }
 
-    if (user.balance < shopItem.price) {
-      throw new BadRequestException('Insufficient balance');
-    }
+  //   if (user.balance < shopItem.price) {
+  //     throw new BadRequestException('Insufficient balance');
+  //   }
 
-    user.balance -= shopItem.price;
-    await this.userService.createUser(user);
+  //   user.balance -= shopItem.price;
+  //   await this.userService.createUser(user);
 
-    const expiredAt = new Date();
-    expiredAt.setSeconds(expiredAt.getSeconds() + shopItem.duration);
+  //   const expiredAt = new Date();
+  //   expiredAt.setSeconds(expiredAt.getSeconds() + shopItem.duration);
 
-    const subscription = this.userSubscriptionRepository.create({
-      user,
-      subscriptions: shopItem,
-      expiredAt,
-    });
+  //   const subscription = this.userSubscriptionRepository.create({
+  //     user,
+  //     subscriptions: shopItem,
+  //     expiredAt,
+  //   });
 
-    return this.userSubscriptionRepository.save(subscription);
-  }
+  //   return this.userSubscriptionRepository.save(subscription);
+  // }
 
   async renewSubscription(
     userId: number,

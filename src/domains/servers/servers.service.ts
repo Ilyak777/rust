@@ -197,6 +197,9 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
     const servers = await this.serversRepository.find();
     const serverInfos = await Promise.all(
       servers.map(async (server) => {
+        if (server.pass) {
+          delete server['pass'];
+        }
         let { address } = server;
         address = address.replace(/"/g, '');
 

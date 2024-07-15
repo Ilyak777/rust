@@ -58,7 +58,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
 
       const steamId = match[0];
       logger.debug(
-        `User with steamId ${steamId} connected to with Id  ${serverId}`,
+        `User with steamId ${steamId} connected to server with Id  ${serverId}`,
       );
       await this.updateUserSet(serverId, steamId.trim());
     }

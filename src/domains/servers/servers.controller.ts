@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  CacheTTL,
+} from '@nestjs/common';
 import { ServersService } from './servers.service';
 import { Server } from './entity/server.entity';
 import { ServerWipe } from './entity/server-wipe.entity';

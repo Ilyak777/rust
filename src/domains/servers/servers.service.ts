@@ -161,7 +161,9 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
           serverOnline: message.content.Players,
           maxServerOnline: message.content.MaxPlayers,
         };
-        await this.cacheManager.set(cacheKey, serverOnline, 10);
+        await this.cacheManager.set(cacheKey, serverOnline, {
+          ttl: 20,
+        } as any);
       }
 
       if (message.Identifier === 444) {

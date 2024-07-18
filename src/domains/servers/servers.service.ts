@@ -130,11 +130,7 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
       rcon.send('playerlist', 'M3RCURRRY', 444);
     });
 
-    rcon.on('error', async (err) => {
-      logger.error(
-        `Error after connection to RCON ${err.message} on ${rcon_host}`,
-      );
-    });
+    rcon.on('error', async (err) => {});
 
     rcon.on('disconnect', async () => {
       logger.debug('Disconnected from RCON websocket');

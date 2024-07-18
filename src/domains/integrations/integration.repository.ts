@@ -101,18 +101,20 @@ export class IntegrationRepository {
     clientId: string,
   ): Promise<void> {
     await this.userService.updateUserIntegration(user.id, null);
+
     const integration = await this.userIntegration.findOne({
       where: { id: user.integration.id },
     });
-
-    await this.userIntegration.delete(integration);
+    if (integration) {
+      await this.userIntegration.delete({ id: integration.id });
+    }
 
     const oneWinIntegration = await this.oneWinRepository.findOne({
-      where: { clientId },
+      where: { clientId: clientId },
     });
 
     if (oneWinIntegration) {
-      await this.oneWinRepository.delete(clientId);
+      await this.oneWinRepository.delete({ id: oneWinIntegration.id });
     }
   }
 }

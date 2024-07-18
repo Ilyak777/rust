@@ -88,6 +88,8 @@ export class IntegrationService {
     }
 
     const clientId = user.integration.onewin.clientId;
+    console.log('------------>', clientId);
+
     await this.repo.deleteUserIntegrationAndCheck(user, clientId);
   }
 }

@@ -91,6 +91,6 @@ export class IntegrationService {
     }
 
     const clientId = user.integration.onewin.clientId;
-    await this.repo.deleteUserIntegrationAndCheck(userId, clientId);
+    await this.repo.deleteUserIntegrationAndCheck(user, clientId);
   }
 }

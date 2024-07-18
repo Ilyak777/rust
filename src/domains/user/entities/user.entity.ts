@@ -43,7 +43,7 @@ export class User {
   })
   role: UserRoleE;
 
-  @OneToOne(() => Integration, { cascade: true })
+  @OneToOne(() => Integration, { cascade: false, nullable: true })
   @JoinColumn()
   integration: Integration;
 

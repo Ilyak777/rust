@@ -59,8 +59,12 @@ export class UserService {
     return this.repo.getUserProfile(userId);
   }
 
-  async updateUserIntegration(userId: number, savedInt: Integration) {
+  async updateUserIntegration(userId: number, savedInt: Integration | null) {
     return this.repo.updateUserIntegration(userId, savedInt);
+  }
+
+  async deleteUserIntegration(userId: number, savedInt: Integration | null) {
+    return this.repo.deleteUserIntegration(userId, savedInt);
   }
 
   async addTestBalance(userId: number) {

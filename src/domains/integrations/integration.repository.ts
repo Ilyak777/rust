@@ -6,6 +6,7 @@ import { Integration } from './entities/integration.entity';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/repositories/user.repository';
 import { OneWinIntegrationHistory } from './entities/integration-1win-history.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class IntegrationRepository {
@@ -88,20 +89,22 @@ export class IntegrationRepository {
   }
 
   async deleteUserIntegrationAndCheck(
-    userId: number,
+    user: User,
     clientId: string,
   ): Promise<void> {
-    await this.userIntegration.delete(userId);
+    await this.userService.updateUserIntegration(user.id, null);
+    const integration = await this.userIntegration.findOne({
+      where: { id: user.integration.id },
+    });
+
+    await this.userIntegration.delete(integration);
 
     const oneWinIntegration = await this.oneWinRepository.findOne({
       where: { clientId },
     });
 
-    if (!oneWinIntegration) {
-      return;
-    } else {
+    if (oneWinIntegration) {
       await this.oneWinRepository.delete(clientId);
-      return;
     }
   }
 }

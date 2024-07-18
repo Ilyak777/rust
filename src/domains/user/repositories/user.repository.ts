@@ -111,9 +111,16 @@ export class UserRepository {
 
   async updateUserIntegration(
     id: number,
-    integration: Integration,
+    integration: Integration | null,
   ): Promise<void> {
     await this.repository.update(id, { integration: integration });
+  }
+
+  async deleteUserIntegration(
+    id: number,
+    integration: Integration,
+  ): Promise<void> {
+    await this.repository.decrement({ id: id }, 'integration', 1);
   }
 
   async addTestBalance(id: number): Promise<void> {

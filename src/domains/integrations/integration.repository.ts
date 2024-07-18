@@ -31,7 +31,6 @@ export class IntegrationRepository {
   ): Promise<OneWinIntegration> {
     const user = await this.userService.findById(userId);
     const userIntegrations = await this.userService.findUserIntegration(userId);
-    const allIntegrations = await this.integrationHistory.find({});
     if (!userIntegrations || !userIntegrations.onewin) {
       const oldIntegrationWUser = await this.integrationHistory.findOne({
         where: { user: user },
@@ -56,6 +55,7 @@ export class IntegrationRepository {
 
       const savedInHistoryIntegration = this.integrationHistory.create({
         clientId: clientId,
+        user: user,
       });
       await this.integrationHistory.save(savedInHistoryIntegration);
 

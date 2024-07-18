@@ -42,7 +42,7 @@ export class UserRepository {
   public async findUserIntegration(id: number): Promise<Integration> {
     const user = await this.repository.findOne({
       where: { id },
-      relations: ['integration', 'integration.onewin', 'integration.onewinOld'],
+      relations: ['integration', 'integration.onewin'],
     });
 
     return user.integration;

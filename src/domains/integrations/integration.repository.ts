@@ -30,7 +30,9 @@ export class IntegrationRepository {
     clientEmail: string,
   ): Promise<OneWinIntegration> {
     const userIntegrations = await this.userService.findUserIntegration(userId);
-
+    const allIntegrations = await this.integrationHistory.find({
+      where: { clientId: clientId },
+    });
     if (!userIntegrations || !userIntegrations.onewin) {
       const oldIntegration = await this.integrationHistory.findOne({
         where: { clientId: clientId },
@@ -63,8 +65,12 @@ export class IntegrationRepository {
         createdIntegration,
       );
 
+      //TODO
+      // make this work for all types of subscriptions in future
       await this.userService.updateUserIntegration(userId, savedIntegration);
-      await this.userService.addTestBalance(userId);
+      if (allIntegrations.length < 1) {
+        await this.userService.addTestBalance(userId);
+      }
 
       return integrationDone;
     } else {

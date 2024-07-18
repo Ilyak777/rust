@@ -15,6 +15,7 @@ import { CommandsModule } from './domains/commands/commands.module';
 import { IntegrationModule } from './domains/integrations/integration.module';
 import { PaymentModule } from './domains/payment/payment.module';
 import { SubscriptionModule } from './domains/subscriptions/subscriptions.module';
+import { ShopModule } from './domains/shop/shop.module';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { SubscriptionModule } from './domains/subscriptions/subscriptions.module
     SeederModule,
     PaymentModule,
     SubscriptionModule,
-    // ShopModule,
+    ShopModule,
   ],
   controllers: [],
   providers: [],

@@ -84,16 +84,16 @@ export class ShopController {
     status: 200,
     description: 'The shop item has been purchased.',
   })
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post('purchase/:serverId')
   purchaseItem(
     @Param('serverId') serverId: number,
     @Body() itemIds: number[],
     @Req() req,
   ): Promise<void> {
-    // const userId = req.user.userId;
-    return this.shopService.purchaseItem(2, itemIds, serverId);
+    const userId = req.user.userId;
+    return this.shopService.purchaseItem(userId, itemIds, serverId);
   }
 
   @ApiOperation({ summary: 'Add balance to a user account' })
@@ -108,5 +108,10 @@ export class ShopController {
   addBalance(@Body('amount') amount: number, @Req() req): Promise<User> {
     const userId = req.user.userId;
     return this.shopService.addBalance(userId, amount);
+  }
+
+  @Post('seed')
+  seed(@Req() req): any {
+    return this.shopService.seedItems();
   }
 }

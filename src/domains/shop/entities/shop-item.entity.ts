@@ -45,6 +45,9 @@ export class ShopItem {
   @Column({ type: 'float' })
   price: number;
 
+  @Column({ nullable: true })
+  command: string;
+
   @OneToMany(() => Subscription, (subscription) => subscription.subscriptions)
   subscriptions: Subscription[];
 

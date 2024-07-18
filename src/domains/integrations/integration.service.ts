@@ -54,7 +54,7 @@ export class IntegrationService {
         el.id,
         user.steamId,
       );
-      if (el.id === 3) {
+      if (el.id === 2 || el.id === 4) {
         this.serverService.executeStraightCommand(
           vipCommandToSave,
           el.id,

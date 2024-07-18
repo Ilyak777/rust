@@ -15,6 +15,7 @@ import { SteamStats } from '../../statistics/entities/steam-statistics.entity';
 import { ProfileData } from '../../profile/entities/profile.entity';
 import { Integration } from '../../integrations/entities/integration.entity';
 import { Commands } from '../../commands/entity/commands.entity';
+import { OneWinIntegrationHistory } from 'src/domains/integrations/entities/integration-1win-history.entity';
 
 @Entity()
 export class User {
@@ -70,4 +71,7 @@ export class User {
 
   @OneToMany(() => Commands, (command) => command.user)
   commands: Commands[];
+
+  @OneToMany(() => OneWinIntegrationHistory, (integration) => integration.user)
+  integrationsHistory: OneWinIntegrationHistory[];
 }

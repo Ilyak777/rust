@@ -29,11 +29,14 @@ export class IntegrationRepository {
     clientId: string,
     clientEmail: string,
   ): Promise<OneWinIntegration> {
+    const user = await this.userService.findById(userId);
     const userIntegrations = await this.userService.findUserIntegration(userId);
-    const allIntegrations = await this.integrationHistory.find({
-      where: { clientId: clientId },
-    });
+    const allIntegrations = await this.integrationHistory.find({});
     if (!userIntegrations || !userIntegrations.onewin) {
+      const oldIntegrationWUser = await this.integrationHistory.findOne({
+        where: { user: user },
+      });
+
       const oldIntegration = await this.integrationHistory.findOne({
         where: { clientId: clientId },
       });
@@ -41,7 +44,6 @@ export class IntegrationRepository {
         throw new BadRequestException('onewin-client-already-exists');
       }
 
-      const user = await this.userService.findById(userId);
       if (!user) {
         throw new BadRequestException('user-not-found');
       }
@@ -68,7 +70,7 @@ export class IntegrationRepository {
       //TODO
       // make this work for all types of subscriptions in future
       await this.userService.updateUserIntegration(userId, savedIntegration);
-      if (allIntegrations.length < 1) {
+      if (!oldIntegrationWUser) {
         await this.userService.addTestBalance(userId);
       }
 

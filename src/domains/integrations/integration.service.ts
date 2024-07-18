@@ -14,7 +14,6 @@ export class IntegrationService {
     @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
     private readonly repo: IntegrationRepository,
     private userService: UserService,
-    private commandService: CommandsService,
     private serverService: ServersService,
   ) {}
 
@@ -30,7 +29,9 @@ export class IntegrationService {
 
   async onewinWebhook(payload: OnewinDto) {
     const userId = await this.cacheManager.get<number>(`onewin-${payload.ok}`);
+
     this.cacheManager.del(`onewin-${payload.ok}`);
+
     const oneExists = await this.repo.getOneWinIntegration(payload.oci);
 
     if (oneExists) {
@@ -73,11 +74,23 @@ export class IntegrationService {
   ) {
     const integration = await this.repo.getOneWinIntegration(clientId);
 
-    const result =
-      integration === null
-        ? await this.repo.createOneWinIntegration(userId, clientId, clientEmail)
-        : await this.repo.updateOneWinIntegration(integration.id, clientEmail);
+    return await this.repo.createOneWinIntegration(
+      userId,
+      clientId,
+      clientEmail,
+    );
+  }
 
-    return result;
+  async onewinLogout(userId: number) {
+    const user = await this.userService.findById(userId);
+    if (!user) {
+      throw new BadRequestException('no-user-found');
+    }
+    if (!user.integration || !user.integration.onewin) {
+      throw new BadRequestException('no-onewin-integration-for-user');
+    }
+
+    const clientId = user.integration.onewin.clientId;
+    await this.repo.deleteUserIntegrationAndCheck(userId, clientId);
   }
 }

@@ -8,17 +8,19 @@ import { Integration } from './entities/integration.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from 'src/app/app.config';
 import { UserModule } from '../user/user.module';
-import { CommandsModule } from '../commands/commands.module';
 import { ServersModule } from '../servers/servers.module';
-import { UserRepository } from '../user/repositories/user.repository';
 import { SubscriptionModule } from '../subscriptions/subscriptions.module';
+import { OneWinIntegrationHistory } from './entities/integration-1win-history.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OneWinIntegration, Integration]),
+    TypeOrmModule.forFeature([
+      OneWinIntegration,
+      Integration,
+      OneWinIntegrationHistory,
+    ]),
     CacheModule.registerAsync(RedisOptions),
     UserModule,
-    CommandsModule,
     ServersModule,
     SubscriptionModule,
   ],

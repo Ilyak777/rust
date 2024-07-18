@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Post,
   Query,
   Req,
   UseGuards,
@@ -26,6 +27,15 @@ export class IntegrationController {
     console.info('checking 1win callback');
 
     await this.service.onewinWebhook(query);
+    return true;
+  }
+
+  @Post('logout')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  async onewinLogout(@Req() req) {
+    const userId = req.user.userId;
+    await this.service.onewinLogout(userId);
     return true;
   }
 }

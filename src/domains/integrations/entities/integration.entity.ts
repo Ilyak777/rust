@@ -7,7 +7,7 @@ export class Integration {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, (user) => user.integration, { cascade: true })
+  @OneToOne(() => User, (user) => user.integration)
   user: User;
 
   @OneToOne(() => OneWinIntegration, {

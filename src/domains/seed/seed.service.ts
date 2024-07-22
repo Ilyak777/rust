@@ -36,7 +36,7 @@ export class SeederService {
 
   async seed() {
     await this.seedUsers();
-    await this.seedShopItems();
+    // await this.seedShopItems();
     await this.seedUserPurchasedItems();
     await this.seedOrderHistory();
     await this.seedUserGameStats();
@@ -76,32 +76,32 @@ export class SeederService {
     await this.userRepository.save(users);
   }
 
-  async seedShopItems() {
-    const shopItems = [
-      this.shopItemRepository.create({
-        name: 'Set Item',
-        type: ShopItemTypeE.SET,
-        category: ShopItemSubtypeE.TOOL,
-        duration: 3600,
-        price: 10,
-      }),
-      this.shopItemRepository.create({
-        name: 'General Item',
-        type: ShopItemTypeE.GENERAL,
-        category: ShopItemSubtypeE.GUN,
-        duration: 7200,
-        price: 20,
-      }),
-      this.shopItemRepository.create({
-        name: 'Subscription Item',
-        type: ShopItemTypeE.SUBSCRIPTION,
-        category: ShopItemSubtypeE.RESOURCES,
-        duration: 86400,
-        price: 30,
-      }),
-    ];
-    await this.shopItemRepository.save(shopItems);
-  }
+  // async seedShopItems() {
+  //   const shopItems = [
+  //     this.shopItemRepository.create({
+  //       name: 'Set Item',
+  //       type: ShopItemTypeE.SET,
+  //       category: ShopItemSubtypeE.TOOL,
+  //       duration: 3600,
+  //       price: 10,
+  //     }),
+  //     this.shopItemRepository.create({
+  //       name: 'General Item',
+  //       type: ShopItemTypeE.GENERAL,
+  //       category: ShopItemSubtypeE.GUN,
+  //       duration: 7200,
+  //       price: 20,
+  //     }),
+  //     this.shopItemRepository.create({
+  //       name: 'Subscription Item',
+  //       type: ShopItemTypeE.SUBSCRIPTION,
+  //       category: ShopItemSubtypeE.RESOURCES,
+  //       duration: 86400,
+  //       price: 30,
+  //     }),
+  //   ];
+  //   await this.shopItemRepository.save(shopItems);
+  // }
 
   async seedUserPurchasedItems() {
     const user = await this.userRepository.findOne({

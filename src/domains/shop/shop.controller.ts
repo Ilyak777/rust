@@ -109,9 +109,4 @@ export class ShopController {
     const userId = req.user.userId;
     return this.shopService.addBalance(userId, amount);
   }
-
-  @Post('seed')
-  seed(@Req() req): any {
-    return this.shopService.seedItems();
-  }
 }

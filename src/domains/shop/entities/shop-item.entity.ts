@@ -23,6 +23,12 @@ export class ShopItem {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  shortName: string;
+
+  @Column({ nullable: true })
+  image: string;
+
   @Column({
     type: 'enum',
     enum: ShopItemTypeE,
@@ -41,6 +47,12 @@ export class ShopItem {
 
   @Column({ type: 'int', nullable: true })
   duration: number;
+
+  @Column({ type: 'bool', default: true })
+  isActive: boolean;
+
+  @Column({ type: 'int', nullable: true })
+  wipeBlock: number;
 
   @Column({ type: 'float' })
   price: number;

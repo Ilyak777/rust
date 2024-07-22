@@ -175,7 +175,11 @@ export class ServersService implements OnModuleInit, OnModuleDestroy {
   }
 
   async findById(id: number): Promise<Server[]> {
-    return this.serversRepository.find({ where: { id } });
+    try {
+      return this.serversRepository.find({ where: { id } });
+    } catch (error) {
+      console.log(error, '=====>', id);
+    }
   }
 
   async findAllServers(): Promise<Server[]> {

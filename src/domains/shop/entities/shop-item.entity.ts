@@ -42,6 +42,9 @@ export class ShopItem {
   })
   category: ShopItemSubtypeE;
 
+  @Column({ type: 'int', nullable: true })
+  amount: number;
+
   @Column({ type: 'bool', default: true })
   canBeGifted: boolean;
 
